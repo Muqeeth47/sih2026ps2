@@ -137,7 +137,7 @@ export const ApplicantView: React.FC<ApplicantViewProps> = ({ currentTab, onTabC
             >
               <span>{tab.label}</span>
               {tab.alert && (
-                <span className="h-2 w-2 bg-rose-500 rounded-none inline-block animate-none" />
+                <span className="h-2 w-2 bg-rose-500 rounded-full inline-block animate-none" />
               )}
             </button>
           ))}
@@ -195,7 +195,7 @@ export const ApplicantView: React.FC<ApplicantViewProps> = ({ currentTab, onTabC
                 ].map((s, idx) => (
                   <div
                     key={idx}
-                    className={`p-2 border text-left flex flex-col justify-between ${
+                    className={`p-2 border rounded-md text-left flex flex-col justify-between ${
                       s.status === 'DONE'
                         ? 'border-green-300 bg-green-50 text-green-700'
                         : s.status === 'ACTIVE'
@@ -383,7 +383,7 @@ export const ApplicantView: React.FC<ApplicantViewProps> = ({ currentTab, onTabC
               return (
                 <div
                   key={scheme.code}
-                  className={`border p-3 flex flex-col justify-between ${
+                  className={`border rounded-md p-3 flex flex-col justify-between ${
                     isEligible
                       ? 'border-green-300 bg-green-50'
                       : 'border-gray-200 bg-gray-50 opacity-75'

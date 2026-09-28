@@ -1,10 +1,13 @@
-import type { Metadata } from 'next';
+import React from 'react';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import { UniversalHeader } from '@/components/layout/UniversalHeader';
 
-export const metadata: Metadata = {
-  title: 'TribalScholar-AI | Ministry of Tribal Affairs (MoTA)',
-  description:
-    'AI-Enabled Scholarship and Fellowship Management System for Scheduled Tribes (SIH26239) — NFST, NOS, Top Class, Post-Matric & Pre-Matric Schemes',
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+
+export const metadata = {
+  title: 'Ministry of Tribal Affairs | Scholarship Portal',
+  description: 'AI-Enabled Scholarship and Fellowship Management System for Scheduled Tribes',
 };
 
 export default function RootLayout({

@@ -8,6 +8,8 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onOpenLegal }) => {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="w-full border-t border-gray-200 bg-white text-gray-600 text-xs">
       {/* Upper Footer Links & Ministry Metadata */}
@@ -26,6 +28,82 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegal }) => {
             <ShieldCheck className="h-3.5 w-3.5" />
             <span>ISO 27001 & CERT-In Security Compliant</span>
           </div>
+
+          {/* Legal Policies */}
+          <nav aria-label="Government Policies Navigation">
+            <ul style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: 0,
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: '1rem 1.75rem',
+            }}>
+                <li>
+                  <button
+                    onClick={() => onOpenLegal('terms')}
+                    style={{
+                      color: '#334155',
+                      textDecoration: 'none',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      transition: 'color 0.15s',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#0f5ca8')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#334155')}
+                  >
+                    Terms & Conditions
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onOpenLegal('privacy')}
+                    style={{
+                      color: '#334155',
+                      textDecoration: 'none',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      transition: 'color 0.15s',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#0f5ca8')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#334155')}
+                  >
+                    Privacy Policy
+                  </button>
+                </li>
+                <li>
+                  <a
+                    href="https://india.gov.in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: '#334155',
+                      textDecoration: 'none',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      transition: 'color 0.15s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#0f5ca8')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#334155')}
+                  >
+                    <ExternalLink size={14} />
+                    <span>india.gov.in</span>
+                  </a>
+                </li>
+            </ul>
+          </nav>
         </div>
 
         {/* Col 2: Schemes Covered */}

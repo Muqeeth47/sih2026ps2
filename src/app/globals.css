@@ -16,7 +16,7 @@
 }
 
 body {
-  background-color: var(--background);
+  background: var(--background);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
@@ -39,12 +39,7 @@ body {
   background: #94a3b8;
 }
 
-/* Strict Anti-Pill Enforcement */
-.rounded-full {
-  border-radius: 2px !important;
-}
-
-/* High Density Table & Print Formatting */
+/* Print Formatting */
 @media print {
   body {
     background: #ffffff !important;
@@ -70,3 +65,4 @@ body {
     display: table-footer-group;
   }
 }
+
