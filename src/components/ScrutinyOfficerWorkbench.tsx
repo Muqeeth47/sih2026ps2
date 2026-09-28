@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MOCK_APPLICATIONS, DEFICIENCY_REMARK_TEMPLATES } from '@/lib/mock-data';
-import type { Application, Document, DocumentType } from '@/lib/types';
+import type { Application, DocumentType } from '@/lib/types';
 import {
   formatCurrency,
   formatDate,
@@ -17,15 +17,22 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
-  Search,
-  ZoomIn,
-  ZoomOut,
-  RotateCw,
-  ExternalLink,
-  Layers,
   Send,
-  UserCheck,
+  MessageSquare,
+  Smartphone,
+  Sparkles,
+  Building,
+  GraduationCap,
+  ExternalLink,
 } from 'lucide-react';
+import { PdfViewer } from './PdfViewer';
+import {
+  OCR_EVALUATION_SCENARIOS,
+  type DocumentAIScenario,
+} from '@/lib/datasets/ocr-scenarios';
+import { validateSubCasteAgainstOrder } from '@/lib/datasets/central-st-order';
+import { checkIsPVTG } from '@/lib/datasets/pvtg-master';
+import { validateAisheCode } from '@/lib/datasets/aishe-master';
 
 interface ScrutinyOfficerWorkbenchProps {
   currentTab: string;
@@ -48,25 +55,42 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
     apps.find((a) => a.status === 'AI_SCRUTINY') ||
     apps[0];
 
+  // Active Document AI Scenario (Defaulting to Scenario 1: Valid Pass)
+  const [activeScenario, setActiveScenario] = useState<DocumentAIScenario>(
+    OCR_EVALUATION_SCENARIOS[0]
+  );
+
   const [activeDocType, setActiveDocType] = useState<DocumentType>('CASTE_CERTIFICATE');
-  const [zoomLevel, setZoomLevel] = useState<number>(100);
-  const [isRotating, setIsRotating] = useState<number>(0);
 
   // Deficiency Modal State
   const [showDeficiencyModal, setShowDeficiencyModal] = useState<boolean>(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string>(DEFICIENCY_REMARK_TEMPLATES[0]);
   const [customRemark, setCustomRemark] = useState<string>('');
 
+  // Notification Dispatch Preview
+  const [showDispatchPreview, setShowDispatchPreview] = useState<boolean>(false);
+  const [dispatchData, setDispatchData] = useState<{ smsText: string; whatsAppText: string } | null>(null);
+
   // Status notification state
   const [feedbackNotice, setFeedbackNotice] = useState<string>('');
 
-  // Deduplication check state
-  const [dedupChecking, setDedupChecking] = useState<boolean>(false);
-  const [dedupResult, setDedupResult] = useState<any>(null);
+  // Real Dataset checks on active scenario / app
+  const currentSubCaste = activeScenario?.subCaste || 'Meena';
+  const currentState = activeScenario?.state || selectedApp.state;
+  const currentInstitution = activeScenario?.institution || selectedApp.institution;
+  const currentIncome = activeScenario?.incomeAmount || selectedApp.annualIncome;
 
-  const activeDoc =
-    selectedApp.documents.find((d) => d.type === activeDocType) ||
-    selectedApp.documents[0];
+  const stOrderCheck = validateSubCasteAgainstOrder(currentState, currentSubCaste);
+  const pvtgCheck = checkIsPVTG(currentSubCaste, currentState);
+  const aisheCheck = validateAisheCode(currentInstitution);
+  const incomeCheck = currentIncome <= 600000;
+
+  const handleSelectScenario = (scenario: DocumentAIScenario) => {
+    setActiveScenario(scenario);
+    setActiveDocType(scenario.documentType);
+    setFeedbackNotice(`Loaded ${scenario.title} into Document Scrutiny Workbench.`);
+    setTimeout(() => setFeedbackNotice(''), 3500);
+  };
 
   const handleApprove = () => {
     setApps((prev) =>
@@ -80,9 +104,28 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
     setTimeout(() => setFeedbackNotice(''), 4000);
   };
 
+  const handleOpenDeficiencyModal = () => {
+    if (activeScenario.category === 'INCOME_EXCEEDED') {
+      setSelectedTemplate(DEFICIENCY_REMARK_TEMPLATES[7]);
+    } else if (activeScenario.category === 'EXPIRED_DOCUMENT') {
+      setSelectedTemplate(DEFICIENCY_REMARK_TEMPLATES[0]);
+    } else {
+      setSelectedTemplate(DEFICIENCY_REMARK_TEMPLATES[1]);
+    }
+    setShowDeficiencyModal(true);
+  };
+
   const handleRaiseDeficiency = (e: React.FormEvent) => {
     e.preventDefault();
     const finalRemark = customRemark.trim() || selectedTemplate;
+
+    // Build automated SMS and WhatsApp notification text
+    const sms = `[Govt of India - MoTA] Action Required: Deficiency flagged in your scholarship application (${selectedApp.id}). Reason: ${finalRemark.slice(0, 100)}... Re-upload within 7 days at: https://sih239.vercel.app?tab=deficiency`;
+    const whatsapp = `🏛️ *MINISTRY OF TRIBAL AFFAIRS (MoTA)*\n*Scholarship Deficiency Notice (Rule 14A)*\n\nDear ${activeScenario.applicantName},\nYour uploaded ${getDocumentLabel(activeDocType)} requires correction.\n\n*Officer Remark:*\n"${finalRemark}"\n\n⏳ *Resolution Window:* 7 Days\n🔗 *Re-upload Portal:* https://sih239.vercel.app?tab=deficiency\n\n_Helpdesk: 1800-11-7788_`;
+
+    setDispatchData({ smsText: sms, whatsAppText: whatsapp });
+    setShowDeficiencyModal(false);
+    setShowDispatchPreview(true);
 
     setApps((prev) =>
       prev.map((a) =>
@@ -105,9 +148,6 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
           : a
       )
     );
-    setShowDeficiencyModal(false);
-    setFeedbackNotice(`Deficiency citation issued for ${selectedApp.id}. 7-day re-upload window opened.`);
-    setTimeout(() => setFeedbackNotice(''), 4000);
   };
 
   const handleEscalatePhysical = () => {
@@ -115,30 +155,6 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
       `Application ${selectedApp.id} escalated to District Collectorate / ITDA (Integrated Tribal Development Agency) for physical field verification.`
     );
     setTimeout(() => setFeedbackNotice(''), 5000);
-  };
-
-  const handleRunDedup = async () => {
-    setDedupChecking(true);
-    try {
-      const res = await fetch('/api/dedup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          aadhaar: selectedApp.aadhaarHash,
-          apaarId: selectedApp.apaarId,
-          bankAccount: 'SBIN00049281',
-        }),
-      });
-      const data = await res.json();
-      setDedupResult(data.result);
-    } catch {
-      setDedupResult({
-        isDuplicate: false,
-        message: 'CLEAN: No active cross-registry conflict detected in NSP or SFMP.',
-      });
-    } finally {
-      setDedupChecking(false);
-    }
   };
 
   return (
@@ -150,9 +166,8 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
             SCRUTINY CONSOLE /
           </span>
           {[
-            { id: 'queue', label: 'Desk Verification Queue' },
             { id: 'workbench', label: 'Split-Screen AI Document Workbench' },
-            { id: 'dedup', label: 'National Deduplication Check' },
+            { id: 'queue', label: 'Desk Verification Queue' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -186,7 +201,243 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
         </div>
       )}
 
-      {/* VIEW 1: QUEUE LIST */}
+      {/* 4 OFFICIAL OCR TEST SCENARIOS SELECTOR STRIP */}
+      <div className="border border-slate-800 bg-[#080d19] p-2.5 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+            OFFICIAL DOCUMENT AI TEST DATASETS (4 STATUTORY VERIFICATION SCENARIOS)
+          </span>
+          <span className="text-[10px] font-mono text-slate-500">
+            CLICK ANY SCENARIO TO TEST REAL-TIME EXTRACTION &amp; CHECKS
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+          {OCR_EVALUATION_SCENARIOS.map((scen) => (
+            <button
+              key={scen.id}
+              onClick={() => handleSelectScenario(scen)}
+              className={`p-2 text-left border transition-all flex flex-col justify-between ${
+                activeScenario.id === scen.id
+                  ? 'border-cyan-500 bg-cyan-950/40 text-cyan-200 shadow-md'
+                  : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:bg-slate-900'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-mono font-bold uppercase text-slate-200">
+                  {scen.category.replace('_', ' ')}
+                </span>
+                <span className={`text-[8px] font-mono px-1 py-0.5 border ${scen.badgeColor}`}>
+                  {scen.badgeLabel}
+                </span>
+              </div>
+              <span className="text-xs font-semibold text-slate-100 truncate">{scen.title}</span>
+              <span className="text-[10px] font-mono text-slate-500 mt-1">
+                {scen.applicantName} ({scen.subCaste}, {scen.state})
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* VIEW: SPLIT-SCREEN AI DOCUMENT WORKBENCH */}
+      {currentTab === 'workbench' && (
+        <div className="flex flex-col gap-3">
+          {/* Header Bar with Active Candidate Metadata & Action Buttons */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border border-slate-800 bg-[#0b1120] p-3">
+            <div className="flex items-center gap-3">
+              <div>
+                <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 block">
+                  ACTIVE SCRUTINY DOSSIER
+                </span>
+                <span className="text-sm font-bold text-slate-100 font-mono">
+                  {activeScenario.applicantName} (APAAR: {activeScenario.apaarId})
+                </span>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 border border-cyan-800 bg-cyan-950/60 text-cyan-300">
+                {selectedApp.schemeCode}
+              </span>
+              <span className={`text-[10px] font-mono px-2 py-0.5 border ${getStatusColor(selectedApp.status)}`}>
+                {getStatusLabel(selectedApp.status)}
+              </span>
+            </div>
+
+            {/* Decision Action Buttons */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleApprove}
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 flex items-center gap-1.5"
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Approve Dossier
+              </button>
+
+              <button
+                onClick={handleOpenDeficiencyModal}
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 flex items-center gap-1.5"
+              >
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Flag Deficiency
+              </button>
+
+              <button
+                onClick={handleEscalatePhysical}
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center gap-1.5"
+              >
+                <ShieldAlert className="h-3.5 w-3.5 text-amber-400" />
+                Escalate Physical Audit
+              </button>
+            </div>
+          </div>
+
+          {/* SPLIT-SCREEN WORKBENCH CONTAINER */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 min-h-[620px]">
+            {/* LEFT COLUMN: REAL MULTI-PAGE VECTOR PDF VIEWER */}
+            <div className="h-full min-h-[580px]">
+              <PdfViewer
+                scenario={activeScenario}
+                applicantName={activeScenario.applicantName}
+                state={activeScenario.state}
+                documentType={activeDocType}
+                fileName={activeScenario.fileName}
+              />
+            </div>
+
+            {/* RIGHT COLUMN: AI EXTRACTIONS & 4 STATUTORY MASTER CHECKS */}
+            <div className="border border-slate-800 bg-[#0b1120] p-4 flex flex-col gap-3.5 overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold">
+                  AI EXTRACTION &amp; STATUTORY MASTER VALIDATION
+                </span>
+                <span
+                  className={`text-xs font-mono font-bold px-2 py-0.5 border ${getConfidenceBadge(
+                    activeScenario.confidenceScore >= 90 ? 'HIGH' : 'LOW'
+                  )}`}
+                >
+                  AI Confidence: {activeScenario.confidenceScore}%
+                </span>
+              </div>
+
+              {/* Red Alert Banner if Scenario has Anomalies */}
+              {activeScenario.anomalies.length > 0 && (
+                <div className="p-2.5 border border-rose-800 bg-rose-950/50 text-rose-300 text-xs">
+                  <div className="font-bold flex items-center gap-1.5 mb-1">
+                    <AlertTriangle className="h-3.5 w-3.5 text-rose-400" />
+                    <span>SYSTEM FRAUD &amp; DEFICIENCY FLAGS:</span>
+                  </div>
+                  <ul className="list-disc list-inside space-y-0.5 text-[11px] font-mono">
+                    {activeScenario.anomalies.map((anom, idx) => (
+                      <li key={idx}>{anom}</li>
+                    ))}
+                  </ul>
+                  <div className="mt-2 text-[10px] font-mono text-rose-200 border-t border-rose-900/60 pt-1">
+                    Expected Action: {activeScenario.expectedCitation}
+                  </div>
+                </div>
+              )}
+
+              {/* AI Extracted Structured Fields Table */}
+              <div className="border border-slate-800 bg-slate-900/80 p-2.5">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block mb-2">
+                  STRUCTURED METADATA EXTRACTED
+                </span>
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div>
+                    <span className="text-slate-500 text-[10px] block">APPLICANT NAME</span>
+                    <span className="text-slate-200 font-bold">{activeScenario.applicantName}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10px] block">SUB-CASTE EXTRACTED</span>
+                    <span className="text-cyan-400 font-bold">{currentSubCaste}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10px] block">ANNUAL INCOME EXTRACTED</span>
+                    <span className={incomeCheck ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                      {formatCurrency(currentIncome)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 text-[10px] block">VALIDITY DATE</span>
+                    <span className={activeScenario.category === 'EXPIRED_DOCUMENT' ? 'text-amber-400 font-bold' : 'text-slate-200'}>
+                      {activeScenario.validUntil}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4 STATUTORY MASTER CHECKS TABLE */}
+              <div className="border border-slate-800 bg-slate-900/80 p-2.5 flex flex-col gap-2">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">
+                  STATUTORY REPOSITORY CROSS-CHECKS (4 MASTER TABLES)
+                </span>
+
+                {/* Check 1: Central Presidential ST Order (Dataset A) */}
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-slate-300 font-bold">1. Article 342 Presidential ST Order:</span>
+                    <span className={stOrderCheck.isValid ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                      {stOrderCheck.isValid ? 'MATCHED ✓' : 'UNLISTED ✗'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">{stOrderCheck.legalCitation}</p>
+                </div>
+
+                {/* Check 2: PVTG Master Dataset (Dataset B) */}
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-slate-300 font-bold">2. PVTG Priority Master Registry:</span>
+                    <span className={pvtgCheck.isPVTG ? 'text-amber-300 font-bold' : 'text-slate-400'}>
+                      {pvtgCheck.isPVTG ? 'PVTG PRIORITY 1 ✓' : 'STANDARD ST'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">{pvtgCheck.notificationDetails}</p>
+                </div>
+
+                {/* Check 3: AISHE Code Master (Dataset C) */}
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-slate-300 font-bold">3. AISHE Institution Accreditation:</span>
+                    <span className={aisheCheck.isValid ? 'text-emerald-400 font-bold' : 'text-amber-400'}>
+                      {aisheCheck.isValid ? `ACCREDITED (${aisheCheck.institution?.aisheCode}) ✓` : 'PENDING ✗'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">{aisheCheck.validationNotice}</p>
+                </div>
+
+                {/* Check 4: Income Ceiling & National Deduplication */}
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-slate-300 font-bold">4. Income Ceiling &amp; NSP Deduplication:</span>
+                    <span
+                      className={
+                        activeScenario.category === 'DUPLICATE_BENEFIT'
+                          ? 'text-red-400 font-bold'
+                          : incomeCheck
+                          ? 'text-emerald-400 font-bold'
+                          : 'text-rose-400 font-bold'
+                      }
+                    >
+                      {activeScenario.category === 'DUPLICATE_BENEFIT'
+                        ? 'DUAL-BENEFIT FRAUD ✗'
+                        : incomeCheck
+                        ? 'PASS (Within Cap) ✓'
+                        : 'CAP EXCEEDED ✗'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">
+                    {activeScenario.category === 'DUPLICATE_BENEFIT'
+                      ? 'Matched active UGC-JRF disbursement on Canara Bank SFMP. Automated freeze triggered.'
+                      : `Income: ${formatCurrency(currentIncome)} (Ceiling: ₹6,00,000 p.a.)`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 2: CENTRAL QUEUE */}
       {currentTab === 'queue' && (
         <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
@@ -198,9 +449,6 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                 MoTA Verification Dossier Queue ({apps.length} Files Assigned)
               </h3>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">
-              FILTER: ALL STATES / ALL SCHEMES
-            </span>
           </div>
 
           <div className="overflow-x-auto w-full">
@@ -257,440 +505,6 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
         </div>
       )}
 
-      {/* VIEW 2: SPLIT-SCREEN AI DOCUMENT WORKBENCH */}
-      {currentTab === 'workbench' && (
-        <div className="flex flex-col gap-3">
-          {/* Header Bar with Applicant Select & One-Click Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border border-slate-200 bg-white rounded-lg shadow-sm p-3">
-            <div className="flex items-center gap-3">
-              <div>
-                <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 block">
-                  ACTIVE SCRUTINY DOSSIER
-                </span>
-                <span className="text-sm font-bold text-slate-900 font-mono">
-                  {selectedApp.id} — {selectedApp.applicantName}
-                </span>
-              </div>
-              <span className={`text-[10px] font-mono px-2 py-0.5 border ${getSchemeColor(selectedApp.schemeCode)}`}>
-                {selectedApp.schemeCode}
-              </span>
-              <span className={`text-[10px] font-mono px-2 py-0.5 border ${getStatusColor(selectedApp.status)}`}>
-                {getStatusLabel(selectedApp.status)}
-              </span>
-            </div>
-
-            {/* Decision Action Buttons */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleApprove}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-green-600 hover:bg-green-700 text-white border border-green-500 flex items-center gap-1.5"
-              >
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Approve Dossier
-              </button>
-
-              <button
-                onClick={() => setShowDeficiencyModal(true)}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-red-50 hover:bg-rose-900 text-red-600 border border-red-200 flex items-center gap-1.5"
-              >
-                <AlertTriangle className="h-3.5 w-3.5" />
-                Flag Deficiency
-              </button>
-
-              <button
-                onClick={handleEscalatePhysical}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5"
-              >
-                <ShieldAlert className="h-3.5 w-3.5 text-orange-600" />
-                Escalate Physical Audit
-              </button>
-            </div>
-          </div>
-
-          {/* Document Switcher Bar */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 bg-white shadow-sm rounded-lg p-2">
-            <span className="text-[10px] uppercase font-mono text-slate-400 mr-2">DOCUMENTS:</span>
-            {selectedApp.documents.map((doc) => (
-              <button
-                key={doc.id}
-                onClick={() => setActiveDocType(doc.type)}
-                className={`px-2.5 py-1 text-xs font-mono uppercase tracking-wider border transition-all ${
-                  activeDocType === doc.type
-                    ? 'border-blue-600 bg-cyan-950/60 text-cyan-300 font-bold'
-                    : 'border-slate-200 bg-white text-slate-400 hover:text-slate-800'
-                }`}
-              >
-                {getDocumentLabel(doc.type)}
-              </button>
-            ))}
-          </div>
-
-          {/* SPLIT-SCREEN WORKBENCH CONTAINER */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 min-h-[580px]">
-            {/* LEFT COLUMN: INTERACTIVE DOCUMENT VIEWER */}
-            <div className="border border-slate-200 bg-[#080d19] flex flex-col justify-between overflow-hidden">
-              {/* Document Viewer Toolbar */}
-              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-                <span className="font-mono text-slate-700 truncate max-w-[220px]">
-                  {activeDoc?.fileName || 'document.pdf'}
-                </span>
-                <div className="flex items-center gap-2 text-slate-400">
-                  <button
-                    onClick={() => setZoomLevel((z) => Math.max(75, z - 15))}
-                    className="p-1 hover:text-slate-900 border border-slate-300 hover:bg-slate-100"
-                    title="Zoom Out"
-                  >
-                    <ZoomOut className="h-3.5 w-3.5" />
-                  </button>
-                  <span className="font-mono text-[10px] text-slate-700 w-10 text-center">
-                    {zoomLevel}%
-                  </span>
-                  <button
-                    onClick={() => setZoomLevel((z) => Math.min(150, z + 15))}
-                    className="p-1 hover:text-slate-900 border border-slate-300 hover:bg-slate-100"
-                    title="Zoom In"
-                  >
-                    <ZoomIn className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    onClick={() => setIsRotating((r) => (r + 90) % 360)}
-                    className="p-1 hover:text-slate-900 border border-slate-300 hover:bg-slate-100"
-                    title="Rotate 90 deg"
-                  >
-                    <RotateCw className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Document Canvas Simulation (High Density Government Certificate Scan) */}
-              <div className="flex-1 p-4 flex items-center justify-center overflow-auto bg-[#04070e]">
-                <div
-                  style={{
-                    transform: `scale(${zoomLevel / 100}) rotate(${isRotating}deg)`,
-                    transition: 'transform 0.15s ease-out',
-                  }}
-                  className="w-full max-w-md border-2 border-slate-300 bg-slate-50 p-5 text-slate-800 shadow-2xl relative"
-                >
-                  {/* Watermark Emblem */}
-                  <div className="text-center border-b border-slate-300 pb-3 mb-3">
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 block">
-                      GOVERNMENT OF {selectedApp.state.toUpperCase()}
-                    </span>
-                    <span className="text-xs font-bold text-slate-900 block">
-                      REVENUE &amp; TRIBAL WELFARE DEPARTMENT
-                    </span>
-                    <span className="text-[10px] font-mono text-green-600">
-                      OFFICIAL STATUTORY CERTIFICATE RECORD
-                    </span>
-                  </div>
-
-                  {/* Body Content simulation depending on document type */}
-                  <div className="space-y-2 text-xs font-serif leading-relaxed text-slate-700">
-                    {activeDocType === 'CASTE_CERTIFICATE' && (
-                      <>
-                        <p>
-                          This is to certify that Kum./Shri{' '}
-                          <strong className="text-slate-900 underline decoration-slate-600">
-                            {selectedApp.applicantName}
-                          </strong>
-                          , son/daughter of Shri Ramkishan Meena, residing at Village/Town Jaipur, in the
-                          State of <strong>{selectedApp.state}</strong>, belongs to the{' '}
-                          <strong className="text-green-700">Meena</strong> Community, which is recognized
-                          as a Scheduled Tribe under the Constitution (Scheduled Tribes) Order, 1950.
-                        </p>
-                        <div className="pt-4 flex justify-between items-end border-t border-slate-200 text-[10px] font-mono">
-                          <div>
-                            <div>Cert No: RJ/ST/2024/98412</div>
-                            <div>Date of Issue: 12-Aug-2023</div>
-                          </div>
-                          <div className="text-right text-green-600 font-bold border border-green-200 p-1 bg-green-50">
-                            DIGITALLY SIGNED<br />TEHSILDAR JAIPUR
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {activeDocType === 'INCOME_CERTIFICATE' && (
-                      <>
-                        <p>
-                          This is to certify that the total annual family income of Shri/Kum.{' '}
-                          <strong className="text-slate-900 underline decoration-slate-600">
-                            {selectedApp.applicantName}
-                          </strong>
-                          , residing at District {selectedApp.state === 'Rajasthan' ? 'Jaipur' : 'Ranchi'}, from
-                          all sources for the Financial Assessment Year is verified to be{' '}
-                          <strong className="text-green-700">
-                            {formatCurrency(selectedApp.annualIncome)}
-                          </strong>{' '}
-                          (Rupees in words).
-                        </p>
-                        <div className="pt-4 flex justify-between items-end border-t border-slate-200 text-[10px] font-mono">
-                          <div>
-                            <div>Cert No: JH/INC/2024/55410</div>
-                            <div>Validity: 31-Mar-2025</div>
-                          </div>
-                          <div className="text-right text-green-600 font-bold border border-green-200 p-1 bg-green-50">
-                            DIGITALLY SIGNED<br />REVENUE CIRCLE OFFICER
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {activeDocType === 'OFFER_LETTER' && (
-                      <>
-                        <p>
-                          <strong>University of Oxford</strong> — Admissions Directorate.
-                        </p>
-                        <p>
-                          We are pleased to confirm that{' '}
-                          <strong className="text-slate-900">{selectedApp.applicantName}</strong> has been
-                          formally accepted into the DPhil program in Computer Science for Michaelmas Term
-                          2024.
-                        </p>
-                        <div className="pt-4 flex justify-between items-end border-t border-slate-200 text-[10px] font-mono">
-                          <div>
-                            <div>QS World Rank: #3</div>
-                            <div>Annual Tuition: £31,480</div>
-                          </div>
-                          <div className="text-right text-blue-600 font-bold border border-cyan-800 p-1 bg-cyan-950/40">
-                            OFFICIAL ADMISSIONS SEAL<br />OXFORD, UK
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {activeDocType === 'MARKSHEET' && (
-                      <>
-                        <p>
-                          <strong>{selectedApp.institution}</strong> — Examination Directorate.
-                        </p>
-                        <p>
-                          Cumulative Statement of Marks for Master of Science. Candidate:{' '}
-                          <strong className="text-slate-900">{selectedApp.applicantName}</strong>. Overall
-                          Aggregate Percentage: <strong>{selectedApp.pgMarksPercent}%</strong>.
-                        </p>
-                        <div className="pt-4 flex justify-between items-end border-t border-slate-200 text-[10px] font-mono">
-                          <div>
-                            <div>Division: First Class</div>
-                            <div>Result: Pass with Distinction</div>
-                          </div>
-                          <div className="text-right text-green-600 font-bold border border-green-200 p-1 bg-green-50">
-                            CONTROLLER OF EXAMINATIONS
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Viewer Indicator */}
-              <div className="border-t border-slate-200 bg-slate-50 px-3 py-1.5 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                <span>FORMAT: VECTOR PDF EMBED (CRYPTO HASH MATCHED)</span>
-                <span>AUDIT LOG: RECORDED</span>
-              </div>
-            </div>
-
-            {/* RIGHT COLUMN: AI EXTRACTIONS, RULE ENGINE & DEDUP CHECK */}
-            <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-3.5 overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                <span className="text-[10px] uppercase font-mono tracking-widest text-green-600 font-bold">
-                  AI EXTRACTION &amp; AUTOMATED RULES VERIFICATION
-                </span>
-                <span
-                  className={`text-xs font-mono font-bold px-2 py-0.5 border ${getConfidenceBadge(
-                    activeDoc?.aiExtraction?.confidenceLevel || 'HIGH'
-                  )}`}
-                >
-                  AI Confidence: {activeDoc?.aiExtraction?.confidenceScore ?? 94}%
-                </span>
-              </div>
-
-              {/* AI Anomalies Red Alert Banner if present */}
-              {activeDoc?.aiExtraction?.anomalies && activeDoc.aiExtraction.anomalies.length > 0 && (
-                <div className="p-2.5 border border-red-200 bg-red-50/40 text-red-600 text-xs">
-                  <div className="font-bold flex items-center gap-1.5 mb-1">
-                    <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
-                    <span>ANOMALIES DETECTED BY MULTIMODAL MODEL:</span>
-                  </div>
-                  <ul className="list-disc list-inside space-y-0.5 text-[11px] font-mono">
-                    {activeDoc.aiExtraction.anomalies.map((anom, idx) => (
-                      <li key={idx}>{anom}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* AI Extracted Metadata Key-Value Table */}
-              <div className="border border-slate-200 bg-slate-50 p-2.5">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block mb-2">
-                  STRUCTURED METADATA EXTRACTED
-                </span>
-                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">APPLICANT NAME</span>
-                    <span className="text-slate-800 font-bold">
-                      {activeDoc?.aiExtraction?.applicantName || selectedApp.applicantName}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">CERTIFICATE NUMBER</span>
-                    <span className="text-blue-600">
-                      {activeDoc?.aiExtraction?.certificateNumber || 'RJ/ST/2024/98412'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">ISSUING AUTHORITY</span>
-                    <span className="text-slate-800">
-                      {activeDoc?.aiExtraction?.issuingAuthority || 'Tehsildar & SDM'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">ISSUE DATE</span>
-                    <span className="text-slate-800">{activeDoc?.aiExtraction?.issueDate || '2023-08-12'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Statutory Rule Engine Verification Checklist */}
-              <div className="border border-slate-200 bg-slate-50 p-2.5">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block mb-2">
-                  STATUTORY RULE ENGINE VERIFICATION CHECKLIST
-                </span>
-                <div className="space-y-1.5 text-xs font-mono">
-                  <div className="flex items-center justify-between p-1.5 border border-slate-200 bg-slate-100">
-                    <span className="text-slate-700">1. Annual Income &le; ₹6,00,000 Cap:</span>
-                    <span className="text-green-600 font-bold">
-                      PASS ({formatCurrency(selectedApp.annualIncome)}) ✓
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-1.5 border border-slate-200 bg-slate-100">
-                    <span className="text-slate-700">2. Sub-caste in Central ST Order ({selectedApp.state}):</span>
-                    <span className="text-green-600 font-bold">PASS (Meena, Sched 1 Part XIII) ✓</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-1.5 border border-slate-200 bg-slate-100">
-                    <span className="text-slate-700">3. Post-Graduation Marks &ge; 55% Cut-off:</span>
-                    <span className="text-green-600 font-bold">PASS ({selectedApp.pgMarksPercent}%) ✓</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-1.5 border border-slate-200 bg-slate-100">
-                    <span className="text-slate-700">4. Age &le; 40 Years Ceiling:</span>
-                    <span className="text-green-600 font-bold">PASS ({selectedApp.age} Years) ✓</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Deduplication Engine Section */}
-              <div className="border border-slate-200 bg-slate-50 p-2.5 flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">
-                    NATIONAL DEDUPLICATION CHECK (NSP &amp; SFMP REGISTRY)
-                  </span>
-                  <button
-                    onClick={handleRunDedup}
-                    disabled={dedupChecking}
-                    className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase bg-slate-100 hover:bg-slate-200 text-blue-600 border border-slate-300"
-                  >
-                    {dedupChecking ? 'Querying APIs...' : 'Execute Hash Check'}
-                  </button>
-                </div>
-
-                {dedupResult ? (
-                  <div
-                    className={`p-2 border text-xs font-mono leading-relaxed ${
-                      dedupResult.isDuplicate
-                        ? 'border-red-200 bg-red-50 text-red-600'
-                        : 'border-green-200 bg-green-50 text-green-700'
-                    }`}
-                  >
-                    {dedupResult.message}
-                  </div>
-                ) : (
-                  <div className="text-[11px] text-slate-400 font-mono">
-                    SHA-256 Hash:{' '}
-                    <span className="text-slate-400">{selectedApp.aadhaarHash.slice(0, 24)}...</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW 3: DEDUPLICATION ENGINE TAB */}
-      {currentTab === 'dedup' && (
-        <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-[10px] uppercase tracking-widest text-green-600 font-mono font-semibold">
-              NATIONAL SCHOLARSHIP DEDUPLICATION REPOSITORY
-            </span>
-            <h3 className="text-base font-bold text-slate-900">
-              Cross-Registry Conflict Simulator (NSP, Canara Bank SFMP, State e-Districts)
-            </h3>
-            <p className="text-xs text-slate-400 mt-1">
-              MoTA statutory rules prohibit dual receipt of public funds. The system checks cryptographic
-              hashes of (Aadhaar + APAAR ID + Bank Account No.) against active government beneficiary lists.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="border border-slate-200 bg-white shadow-sm rounded-lg p-3.5 flex flex-col gap-3">
-              <span className="text-[10px] uppercase font-mono tracking-wider text-blue-600">
-                TEST DEDUPLICATION HASH LOOKUP
-              </span>
-
-              <div>
-                <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1">
-                  Candidate APAAR ID
-                </label>
-                <input
-                  type="text"
-                  defaultValue="APAAR-2024-003456"
-                  className="w-full bg-slate-100 border border-slate-300 text-xs text-slate-800 p-2 font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1">
-                  Masked Aadhaar Number
-                </label>
-                <input
-                  type="text"
-                  defaultValue="XXXX-XXXX-9841"
-                  className="w-full bg-slate-100 border border-slate-300 text-xs text-slate-800 p-2 font-mono"
-                />
-              </div>
-
-              <button
-                onClick={handleRunDedup}
-                className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white border border-blue-600"
-              >
-                Execute National Query →
-              </button>
-            </div>
-
-            <div className="border border-slate-200 bg-white shadow-sm rounded-lg p-3.5 flex flex-col justify-between">
-              <div>
-                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">
-                  CONFIRMED CROSS-REGISTRY CONFLICT CASE
-                </span>
-                <p className="text-xs text-slate-400 mt-1">
-                  Applicant <strong>Ramu Gond (APP-2024-NOS-004)</strong> has an active conflict flagged
-                  under UGC-JRF via Canara Bank SFMP (Ref: UGC/SFMP/JRF/2024/4412).
-                </p>
-
-                <div className="p-3 border border-red-200 bg-red-50/40 text-red-600 text-xs mt-3 leading-relaxed font-mono">
-                  DUAL BENEFIT VIOLATION: Scholar drawing ₹37,000/mo JRF stipend from UGC. NOS overseas
-                  fellowship auto-frozen until UGC de-sanction certificate is submitted.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* DEFICIENCY REMARK MODAL */}
       {showDeficiencyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -700,8 +514,8 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                 <span className="text-[10px] uppercase font-mono tracking-widest text-red-500 font-bold">
                   FLAG DOCUMENT DEFICIENCY (RULE 14A)
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">
-                  Issue Statutory Citation to {selectedApp.applicantName}
+                <h3 className="text-sm font-bold text-slate-100">
+                  Issue Statutory Citation to {activeScenario.applicantName}
                 </h3>
               </div>
               <button
@@ -732,7 +546,7 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
               <div>
                 <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1">
-                  Officer Detailed Remarks (Appended to SMS / WhatsApp Alert)
+                  Officer Detailed Remarks
                 </label>
                 <textarea
                   rows={3}
@@ -745,7 +559,7 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
               <div className="text-[11px] text-slate-400 font-mono bg-slate-50 p-2 border border-slate-200">
                 Notice: Raising a deficiency opens an isolated 7-day countdown window on the scholar’s
-                portal and sends automated notification via SMS and DigiLocker.
+                portal and dispatches automated notifications via SMS, WhatsApp, and DigiLocker.
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
@@ -765,6 +579,75 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* SMS & WHATSAPP NOTIFICATION DISPATCH PREVIEW MODAL */}
+      {showDispatchPreview && dispatchData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+          <div className="w-full max-w-2xl border border-slate-700 bg-[#0b1120] p-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+              <div>
+                <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold">
+                  AUTOMATED DEFICIENCY DISPATCH LOOP (TELECOM GATEWAY)
+                </span>
+                <h3 className="text-base font-bold text-slate-100">
+                  Instant Notifications Dispatched to Scholar
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowDispatchPreview(false)}
+                className="text-slate-400 hover:text-slate-100 font-mono text-xs px-2 py-1 border border-slate-700 hover:bg-slate-800"
+              >
+                ✕ CLOSE
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+              {/* SMS Notification Card */}
+              <div className="border border-slate-800 bg-slate-900/90 p-3 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs mb-2">
+                    <Smartphone className="h-4 w-4" />
+                    <span>NIC DLT National SMS Gateway (Sent)</span>
+                  </div>
+                  <div className="p-2.5 bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 leading-relaxed whitespace-pre-wrap">
+                    {dispatchData.smsText}
+                  </div>
+                </div>
+                <div className="mt-2 text-[10px] font-mono text-slate-500 flex justify-between">
+                  <span>DLT Header: GOVMOT</span>
+                  <span className="text-emerald-400">DELIVERED ✓</span>
+                </div>
+              </div>
+
+              {/* WhatsApp Notification Card */}
+              <div className="border border-slate-800 bg-slate-900/90 p-3 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs mb-2">
+                    <MessageSquare className="h-4 w-4" />
+                    <span>WhatsApp Official MoTA Business API</span>
+                  </div>
+                  <div className="p-2.5 bg-[#051c14] border border-emerald-900/60 text-xs font-mono text-emerald-200 leading-relaxed whitespace-pre-wrap">
+                    {dispatchData.whatsAppText}
+                  </div>
+                </div>
+                <div className="mt-2 text-[10px] font-mono text-slate-500 flex justify-between">
+                  <span>Template: mota_deficiency_alert</span>
+                  <span className="text-emerald-400">READ ✓✓</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-800">
+              <button
+                onClick={() => setShowDispatchPreview(false)}
+                className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600"
+              >
+                Acknowledge &amp; Return to Desk
+              </button>
+            </div>
           </div>
         </div>
       )}

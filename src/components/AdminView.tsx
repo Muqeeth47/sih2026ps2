@@ -17,7 +17,17 @@ import {
   FileCheck2,
   DollarSign,
   Download,
+  KeyRound,
+  ShieldCheck,
+  Lock,
 } from 'lucide-react';
+import {
+  signSanctionOrderWithDSC,
+  verifyDigitalSignature,
+  type CryptographicSignatureResult,
+  type VerificationCheckResult,
+} from '@/lib/crypto-pki';
+import { QS_WORLD_RANKINGS, validateQsRankForNOS } from '@/lib/datasets/qs-rankings-master';
 
 interface AdminViewProps {
   currentTab: string;
@@ -42,9 +52,14 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
     pvtgSelected: 1,
     pwdSelected: 1,
     sanctionOrderNumber: 'MOTA/SCHOLARSHIP/SANCTION/2026/8941',
-    eSignHash: 'SHA256:7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C',
   });
   const [isCalculatingMerit, setIsCalculatingMerit] = useState<boolean>(false);
+
+  // WebCrypto DSC Asymmetric PKI State
+  const [dscSignature, setDscSignature] = useState<CryptographicSignatureResult | null>(null);
+  const [isSigning, setIsSigning] = useState<boolean>(false);
+  const [verificationResult, setVerificationResult] = useState<VerificationCheckResult | null>(null);
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
 
   // PFMS Batch state
   const [pfmsBatchGenerated, setPfmsBatchGenerated] = useState<boolean>(false);
@@ -79,6 +94,40 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
       // fallback
     } finally {
       setIsCalculatingMerit(false);
+    }
+  };
+
+  // Real WebCrypto DSC Signing
+  const handleSignOrderWithPKI = async () => {
+    setIsSigning(true);
+    try {
+      const orderContent = `MoTA SANCTION ORDER ${meritStats.sanctionOrderNumber} | DATE: 2026-09-28 | SCHEME: ${meritScheme} | SELECTED SCHOLARS: ${meritData.map((m) => m.applicationId).join(',')}`;
+      const sig = await signSanctionOrderWithDSC(orderContent);
+      setDscSignature(sig);
+      setVerificationResult(null);
+    } catch (err: any) {
+      console.error('DSC signing failed:', err);
+    } finally {
+      setIsSigning(false);
+    }
+  };
+
+  // Real Mathematical Verification of Signature
+  const handleVerifyDscSignature = async () => {
+    if (!dscSignature) return;
+    setIsVerifying(true);
+    try {
+      const orderContent = `MoTA SANCTION ORDER ${meritStats.sanctionOrderNumber} | DATE: 2026-09-28 | SCHEME: ${meritScheme} | SELECTED SCHOLARS: ${meritData.map((m) => m.applicationId).join(',')}`;
+      const res = await verifyDigitalSignature(
+        orderContent,
+        dscSignature.signatureHex,
+        dscSignature.publicKeyJwk
+      );
+      setVerificationResult(res);
+    } catch (err: any) {
+      console.error('Verification failed:', err);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -135,7 +184,6 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
       {/* TAB 1: NATIONAL DASHBOARD & KPIS */}
       {currentTab === 'kpi' && (
         <div className="flex flex-col gap-4">
-          {/* 4 High-Density KPI Metric Tiles */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-3.5 flex flex-col justify-between">
               <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400">
@@ -186,7 +234,6 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
             </div>
           </div>
 
-          {/* State-Wise & Scheme-Wise Allocation Matrices */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* State-Wise Distribution Table */}
             <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col">
@@ -264,7 +311,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
         </div>
       )}
 
-      {/* TAB 2: CONFIGURABLE SCHEME RULES ENGINE (ZERO HARDCODING) */}
+      {/* TAB 2: CONFIGURABLE SCHEME RULES ENGINE */}
       {currentTab === 'rules' && (
         <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
           <div className="border-b border-slate-200 pb-3">
@@ -275,8 +322,8 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
               Cabinet Policy Parameter Configuration Engine
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Modify income ceilings, post-graduation academic cut-offs, QS world ranking thresholds,
-              and statutory reservation quotas on the fly without software re-deployment.
+              Modify income ceilings, academic cut-offs, QS world ranking thresholds, and statutory
+              reservation quotas on the fly without software re-deployment.
             </p>
           </div>
 
@@ -376,7 +423,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
                 {editingScheme.foreignUniversityQSRank && (
                   <div>
                     <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1">
-                      Foreign University QS World Rank Cut-off
+                      Foreign University QS World Rank Cut-off (NOS Scheme)
                     </label>
                     <input
                       type="number"
@@ -424,7 +471,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
         </div>
       )}
 
-      {/* TAB 3: AUTOMATED MERIT LIST & QUOTA ENGINE */}
+      {/* TAB 3: AUTOMATED MERIT LIST & QUOTA ENGINE WITH REAL WEBCRYPTO DSC */}
       {currentTab === 'merit' && (
         <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3 no-print">
@@ -454,6 +501,15 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
                 <ListOrdered className="h-3.5 w-3.5" />
                 {isCalculatingMerit ? 'Recomputing Quotas...' : 'Run Quota Allocation Engine'}
               </button>
+
+              <button
+                onClick={handleSignOrderWithPKI}
+                disabled={isSigning}
+                className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 flex items-center gap-1.5"
+              >
+                <KeyRound className="h-3.5 w-3.5" />
+                {isSigning ? 'Generating ECDSA Keys...' : 'Digitally Sign Order (WebCrypto DSC) →'}
+              </button>
             </div>
           </div>
 
@@ -478,6 +534,56 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
               <span className="text-orange-600 font-bold">{meritStats.pwdSelected} Selected</span>
             </div>
           </div>
+
+          {/* Live WebCrypto PKI Signature Verification Banner */}
+          {dscSignature && (
+            <div className="border border-emerald-800 bg-emerald-950/30 p-3 no-print flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono text-emerald-300 font-bold flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                  REAL WEBCRYPTO DIGITAL SIGNATURE CERTIFICATE (DSC) ATTACHED
+                </span>
+                <button
+                  onClick={handleVerifyDscSignature}
+                  disabled={isVerifying}
+                  className="px-3 py-1 text-xs font-bold font-mono uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800"
+                >
+                  {isVerifying ? 'Verifying Math...' : 'Mathematically Verify Signature'}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px] font-mono text-slate-400 bg-slate-950 p-2 border border-slate-800">
+                <div>
+                  <span className="text-slate-500 block">SIGNER AUTHORITY:</span>
+                  <span className="text-slate-200">{dscSignature.signerName} ({dscSignature.signerDesignation})</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block">DIGITAL DIGEST (SHA-256):</span>
+                  <span className="text-cyan-400 break-all">{dscSignature.digestHex}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block">ALGORITHM:</span>
+                  <span className="text-slate-200">{dscSignature.algorithm}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block">SIGNATURE RAW (ECDSA HEX):</span>
+                  <span className="text-emerald-400 truncate block">{dscSignature.signatureHex.slice(0, 48)}...</span>
+                </div>
+              </div>
+
+              {verificationResult && (
+                <div
+                  className={`p-2 border text-xs font-mono ${
+                    verificationResult.isValid
+                      ? 'border-emerald-700 bg-emerald-900/40 text-emerald-200'
+                      : 'border-red-700 bg-red-900/40 text-red-200'
+                  }`}
+                >
+                  {verificationResult.message}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* OFFICIAL GAZETTE SANCTION ORDER LAYOUT (Print Optimized) */}
           <div className="border-2 border-slate-300 bg-slate-100 p-6 text-slate-800 print:text-black print:bg-white print:border-black font-serif">
@@ -504,7 +610,6 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
               enforced (30% Female Quota, 5% PwD Quota, and direct PVTG Priority).
             </p>
 
-            {/* Merit Table */}
             <div className="overflow-x-auto w-full mb-4">
               <table className="w-full text-left text-xs border border-slate-300 print:border-black">
                 <thead className="bg-white text-slate-700 print:bg-gray-100 print:text-black font-mono text-[10px] border-b border-slate-300">
@@ -545,8 +650,14 @@ export const AdminView: React.FC<AdminViewProps> = ({ currentTab, onTabChange })
             {/* Digital PKI Cryptographic Stamp */}
             <div className="pt-4 border-t border-slate-300 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-slate-400">
               <div>
-                <div>CRYPTOGRAPHIC DIGEST: {meritStats.eSignHash}</div>
-                <div>ISSUED UNDER AUTHORITY OF JOINT SECRETARY (MoTA), NEW DELHI</div>
+                <div>
+                  CRYPTOGRAPHIC DIGEST:{' '}
+                  {dscSignature?.digestHex ||
+                    'SHA256:7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C'}
+                </div>
+                <div>
+                  ISSUED UNDER AUTHORITY OF JOINT SECRETARY (MoTA), NEW DELHI
+                </div>
               </div>
               <div className="border border-green-200 p-2 bg-green-50 text-green-700 font-bold text-center">
                 DIGITALLY SIGNED &amp; SEALED<br />GOVERNMENT OF INDIA
