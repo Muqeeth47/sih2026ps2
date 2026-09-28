@@ -1,4 +1,4 @@
-export type Role = 'APPLICANT' | 'INSTITUTE_NODAL' | 'SCRUTINY_OFFICER' | 'MINISTRY_ADMIN';
+export type Role = 'GUEST' | 'APPLICANT' | 'INSTITUTE_NODAL' | 'SCRUTINY_OFFICER' | 'MINISTRY_ADMIN';
 
 export type SchemeCode = 'NFST' | 'NOS' | 'TOP_CLASS' | 'POST_MATRIC' | 'PRE_MATRIC';
 
@@ -51,6 +51,7 @@ export interface SchemeRule {
   femaleQuotaPercent: number;
   pwdQuotaPercent: number;
   active: boolean;
+  type?: 'scholarship' | 'fellowship';
 }
 
 export interface Document {

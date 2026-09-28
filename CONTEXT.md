@@ -1,93 +1,134 @@
-# CONTEXT.md — TribalScholar-AI Architecture & System Blueprint
-**Ministry of Tribal Affairs (MoTA) — Government of India**  
-**Problem Statement ID:** SIH26239  
-**Platform Name:** TribalScholar-AI (AI-Enabled Scholarship and Fellowship Management System for Scheduled Tribes)  
-**Live Production URL:** [https://sih239.vercel.app](https://sih239.vercel.app)  
-**GitHub Repository:** [https://github.com/Muqeeth47/sih2026ps2](https://github.com/Muqeeth47/sih2026ps2)
+# SIHPS2 - Project Context
 
----
+## 1. PROJECT OVERVIEW
+- **Problem Statement:** 26239 - "AI-Enabled Scholarship and Fellowship Management System for Scheduled Tribes"
+- **Ministry:** Ministry of Tribal Affairs (MoTA)
+- **Category:** Software
+- **Theme:** Smart Education
+- **Objective:** To provide a streamlined, AI-enhanced, and user-friendly digital portal for Scheduled Tribe (ST) students to discover, apply for, and manage scholarships and fellowships, while enabling efficient scrutiny and administration for MoTA officials.
+- **Target Users:** Scheduled Tribe students, Institute Nodal Officers, MoTA Scrutiny Officers, and Ministry Administrators.
+- **Roles Implemented:** Applicant (`APPLICANT`), Scrutiny Officer (`SCRUTINY_OFFICER`), Ministry Admin (`MINISTRY_ADMIN`), and Institute Nodal (`INSTITUTE_NODAL`).
 
-## 1. System Overview & Statutory Mandate
-TribalScholar-AI is an enterprise-grade government portal designed to eliminate manual paper scrutiny for tribal fellowships and scholarships. It integrates statutory references from:
-- [https://tribal.nic.in/ScholarshiP.aspx](https://tribal.nic.in/ScholarshiP.aspx) (MoTA fellowship guidelines, income ceilings, and slot distribution)
-- [https://dbttribal.gov.in/AllScheme.aspx](https://dbttribal.gov.in/AllScheme.aspx) (Direct Benefit Transfer guidelines, state quotas, and PFMS payment rules)
+## 2. CURRENT TECH STACK
+- **Framework:** Next.js 16.3.6 (App Router)
+- **UI/Components:** React 19, Tailwind CSS, Lucide React (Icons), Custom `PdfViewer` Component
+- **Language:** TypeScript
+- **State Management:** Zustand (with local storage persistence for mock data)
+- **Authentication:** Mock/Prototype Role-based Auth (with a planned isolated Firebase architecture)
+- **Persistence:** Local Storage via Zustand (No real database connected yet)
+- **Cryptography:** WebCrypto API for Digital Signature Certificate (DSC) generation and verification (`crypto-pki.ts`)
 
-The portal unifies 5 statutory schemes:
-1. **National Fellowship for ST (NFST)** — M.Phil / PhD research scholars (JRF/SRF)
-2. **National Overseas Scholarship (NOS)** — ST students studying abroad in Top 500 QS-ranked universities
-3. **Top Class Education Scheme** — ST students admitted to premier institutions (IITs, IIMs, AIIMS, NITs, NLUs)
-4. **Post-Matric Scholarship for ST Students** — Class 11 through post-graduation
-5. **Pre-Matric Scholarship for ST Students** — Classes 9 and 10
+## 3. PROJECT STRUCTURE
+```
+D:\SIHPS2\
+├── public/                 # Static assets (including Ministry_of_Tribal_Affairs.svg)
+├── src/
+│   ├── app/                # Next.js App Router
+│   │   ├── (public)/       # Public routes (Home, Login, Scholarships, Fellowships, Help)
+│   │   ├── (applicant)/    # Applicant portal routes (Dashboard, Apply, Tracking, etc.)
+│   │   ├── (officer)/      # Scrutiny Officer portal routes (Review, Applications)
+│   │   ├── (admin)/        # Ministry Admin portal routes (Merit List, Analytics)
+│   │   ├── api/            # Mock API routes (dedup, merit-list, schemes, verify-doc)
+│   │   └── layout.tsx      # Root layout
+│   ├── components/         # Shared UI components (UniversalHeader, Sidebar, PdfViewer, etc.)
+│   ├── lib/
+│   │   ├── datasets/       # Statutory Datasets (AISHE, PVTG, ST Order, QS Rankings, OCR Scenarios)
+│   │   ├── store.ts        # Zustand global state (Mock DB)
+│   │   ├── types.ts        # TypeScript interfaces
+│   │   ├── utils.ts        # Helper functions
+│   │   ├── firebase.ts     # Isolated Firebase Architecture integration
+│   │   ├── crypto-pki.ts   # WebCrypto / DSC engine implementation
+│   │   └── mock-data.ts    # Seed data for schemes and rules
+```
 
----
+## 4. ROUTING
+| Route | Purpose | Role | Status |
+|---|---|---|---|
+| `/` | Landing Page | Public | Implemented |
+| `/login` | Prototype Authentication | Public | Implemented |
+| `/scholarships` | Scholarship Discovery | Public | Implemented |
+| `/fellowships` | Fellowship Discovery | Public | Implemented |
+| `/applicant` | Applicant Dashboard | Applicant | Implemented |
+| `/applicant/apply` | Application Wizard (4-step) | Applicant | Implemented |
+| `/applicant/applications/[id]` | Application Details & Deficiencies | Applicant | Implemented |
+| `/applicant/documents` | Document Vault | Applicant | Implemented |
+| `/applicant/tracking` | Status Tracking Pipeline | Applicant | Implemented |
+| `/applicant/fellowship-management` | Post-selection Portal | Applicant | Implemented |
+| `/officer` | Scrutiny Dashboard | Officer | Implemented |
+| `/officer/applications` | Application Queue | Officer | Implemented |
+| `/officer/review/[id]` | Document Scrutiny & AI Checks | Officer | Implemented |
+| `/admin` | Admin Dashboard | Admin | Implemented |
+| `/admin/merit-list` | Selection Algorithm Dashboard | Admin | Implemented |
 
-## 2. The 4 Official Government Reference Datasets (Public & Verifiable)
+## 5. USER FLOWS
 
-### Dataset A: Central Scheduled Tribes (ST) Presidential Order Master List
-- **File:** `src/lib/datasets/central-st-order.ts`
-- **Legal Authority:** Constitution (Scheduled Tribes) Order, 1950 (Article 342)
-- **Role:** When AI extracts an applicant's sub-caste (e.g. *Chenchu*, *Meena*, *Munda*, *Gond*, *Bhil*), the system checks against this database. If the community is not notified for the declared state, the system flags an **Invalid ST Claim** immediately.
+**Applicant:**
+Login → Dashboard → Find Scholarships → Click "Apply Now" → Application Wizard (Eligibility Engine → Academic Info → Document Upload → Submit) → Track Application → Resolve Deficiencies (if any) → Post-Selection Fellowship Management.
 
-### Dataset B: Particularly Vulnerable Tribal Groups (PVTG) Master Dataset
-- **File:** `src/lib/datasets/pvtg-master.ts`
-- **Legal Authority:** Ministry of Tribal Affairs 75 Notified PVTG Registry across 18 States and UTs (`tribal.nic.in/pvtg.aspx`)
-- **Role:** Applicants from the 75 notified PVTGs (e.g., *Birhor*, *Chenchu*, *Maria Gond*, *Sentinelese*, *Toda*, *Sahariya*) receive automated first-priority shortlisting in the Scrutiny Queue and Merit Allocation Engine.
+**Scrutiny Officer:**
+Login → Dashboard → Application Queue → Application Review (Split-Screen AI Document Workbench, Check AI Duplicate Flags & OCR Scenarios) → Action (Verify & Approve / Reject / Request Correction) → Submit Decision.
 
-### Dataset C: AISHE (All India Survey on Higher Education) Code Master
-- **File:** `src/lib/datasets/aishe-master.ts`
-- **Legal Authority:** Ministry of Education AISHE Directory (`aishe.gov.in`)
-- **Role:** Validates applicant institution codes (e.g., `U-0205` for BIT Mesra, `U-0391` for Univ of Rajasthan, `U-0273` for IISER Bhopal, `U-0092` for NIT Raipur) to prevent unaccredited/bogus colleges from claiming scholarship funds.
+**Administrator:**
+Login → Dashboard → Configurable Scheme Rules Engine → Merit List Engine (Run Selection Algorithm) → PFMS DBT Batch Sanctions & WebCrypto DSC Signing.
 
-### Dataset D: QS World University Rankings Dataset (For NOS Scheme)
-- **File:** `src/lib/datasets/qs-rankings-master.ts`
-- **Role:** Enforces the statutory NOS rule that foreign universities must be ranked within the Top 500 in QS World Rankings (e.g., Oxford #3, Cambridge #2, Imperial #6, MIT #1, Harvard #4). Universities outside the threshold (Rank > 500) are automatically flagged as ineligibile.
+## 6. SCHOLARSHIP/FELLOWSHIP FUNCTIONALITY
+- **NFST (National Fellowship for Scheduled Tribe):** Implemented. Requires Post-Graduation marks, specific income limits, and fellowship-specific documents.
+- **NOS (National Overseas Scholarship):** Implemented. High income threshold, requires specific visa and admission documents (Validated against QS World Rankings).
+- **Application Workflow:** Dynamic multi-step wizard adapting document requirements based on the scheme type.
+- **Fellowship Management:** Portal for submitting quarterly progress reports and tracking disbursement schedules.
 
----
+## 7. AI / INTELLIGENT FEATURES & STATUTORY CHECKS
+**IMPLEMENTED (Algorithms & Master Datasets):**
+- **Eligibility Engine:** Client-side rule engine validating age, income, and marks in real-time during the application wizard.
+- **Statutory Master Checks (via `lib/datasets`):** Cross-referencing against Central ST Presidential Order, PVTG Master, AISHE Accreditation, and QS World Rankings.
+- **Duplicate Detection (NSP / SFMP Registry):** Cryptographic hash deduplication flagging applicants with similar details/documents.
+- **AI Document Scrutiny:** Split-screen PdfViewer workbench leveraging OCR Evaluation Scenarios to simulate validation, document anomaly detection, and data extraction.
+- **Merit/Selection Assistance:** Algorithmic ranking dashboard for Admins based on PG Marks, Female Quota, and PVTG Priority.
+- **Cryptographic Security:** Built-in WebCrypto API logic to securely issue and mathematically verify Digital Signature Certificates (DSC) on Official Gazette Orders.
 
-## 3. The 4 Document AI / OCR Evaluation Scenarios
+**PLANNED:**
+- Real OCR/Document verification.
+- Advanced ML-based anomaly detection models.
 
-Pre-seeded in `src/lib/datasets/ocr-scenarios.ts` and directly selectable in the Scrutiny Workbench:
+## 8. DATA MODEL
+- **User:** Prototype identities (Applicant, Officer, Admin).
+- **Application:** Core entity tracking `schemeCode`, `status`, `personalData`, `academicData`, `documents`, and `deficiencies`.
+- **Scheme:** Config entity defining `minMarks`, `maxIncome`, and `requiredDocs`.
+- **Deficiency:** Sub-entity of Application detailing reasons for document rejection and current status (`OPEN` / `RESOLVED`).
 
-| Category | Sample Document | What the AI Extracts & Validates | Statutory Outcome |
-| :--- | :--- | :--- | :--- |
-| **Scenario 1: Valid Pass** | Digital e-District Caste Certificate (AP MeeSeva / Odisha e-District) | Name matches Aadhaar, Sub-caste (*Chenchu*) is in Presidential Order &amp; 75 PVTG list, Digital Signature valid. | **AUTO-APPROVE** (100% Match) |
-| **Scenario 2: Income Exceeded** | Tehsildar Income Certificate showing ₹8,50,000/yr | Income extracted at ₹8,50,000 exceeds ₹6,00,000 statutory cap. | **AUTO-FLAG DEFICIENCY** |
-| **Scenario 3: Expired Document** | Income certificate issued in FY 2022-23 | Expired validity date (31-03-2023); current FY 2024-25 mandatory. | **PROMPT RE-UPLOAD IN 7 DAYS** |
-| **Scenario 4: Duplicate Benefit** | Masked Aadhaar / APAAR active on NSP / Canara Bank SFMP | SHA-256 hash matches active UGC-JRF disbursement in external registry. | **FLAG DUAL-BENEFIT FRAUD** |
+## 9. API ROUTES
+- `/api/dedup` (POST): Checks for duplicate applications based on Aadhaar/APAAR. Mocked logic.
+- `/api/verify-doc` (POST): Simulates AI document verification using predefined OCR scenarios. Returns confidence scores.
+- `/api/merit-list` (POST): Executes ranking algorithm.
+- `/api/schemes` (GET): Returns available schemes.
 
----
+## 10. UI / DESIGN SYSTEM
+- **Branding:** Official Ministry of Tribal Affairs SVG integrated into UniversalHeader and alternative Headers.
+- **Layouts:** Distinct Applicant, Officer, and Admin sidebars and navigation.
+- **Design:** Clean, modern, accessible (A- / A / A+ text sizing), responsive tailwind classes, Government of India styling cues (Blue/Slate color palette for Applicants, Dark pro-theme for Officer Workbench).
 
-## 4. Isolated Firebase Architecture (Zero Cross-Talk Guarantee)
-- **File:** `src/lib/firebase.ts`
-- **Isolation Mechanism:** Explicit named app instance: `initializeApp(firebaseConfig, "mota-scholar-db")`.
-- **Environment Namespace:** Dedicated `NEXT_PUBLIC_MOTA_FIREBASE_*` variables prevent any collision, merge, or cross-talk with your other Firebase websites.
-- **Resilient Fallback:** Automatically switches to the in-memory/local storage store if external Firebase credentials are omitted or offline.
+## 11. DEMO / PROTOTYPE LOGIN
+Fully interactive mock login at `/login`. Users can one-click authenticate as `Applicant`, `Scrutiny Officer`, or `Administrator`. Firebase isolated authentication architecture is set up in `firebase.ts` for future production integration.
 
----
+## 12. CURRENT LIMITATIONS
+- **Data Persistence:** Uses LocalStorage (Zustand). Data resets if browser cache is cleared.
+- **Authentication:** Completely mocked client-side. No real JWTs/Sessions.
+- **File Uploads:** Simulated. No actual files are stored on a server/S3.
+- **AI Verification:** Simulated using pre-defined scenario sets (`ocr-scenarios.ts`).
 
-## 5. Browser-Native Web-Crypto Digital Signature Certificate (DSC) Engine
-- **File:** `src/lib/crypto-pki.ts`
-- **Standard:** W3C WebCrypto API (`crypto.subtle`)
-- **Key Algorithm:** ECDSA P-256 with SHA-256 Digest
-- **Capabilities:**
-  - Generates authentic asymmetric keypairs in the browser.
-  - Digitally signs official MoTA Gazette Sanction Orders.
-  - Produces real cryptographic signature hex + public verification JWK.
-  - **1-Click Verification:** Anyone can mathematically verify the signature against the payload in real-time.
+## 13. DATABASE PLAN (FUTURE)
+Proposed Architecture: PostgreSQL + Prisma ORM.
+Intended Entities: `User`, `Scheme`, `Application`, `Document`, `Deficiency`, `Notification`.
+Details documented in `DATABASE_PROPOSAL.md`.
 
----
+## 14. DEVELOPMENT WORKFLOW
+- **Install:** `npm install`
+- **Run Locally:** `npm run dev`
+- **Build:** `npm run build`
+- **Branch:** `ui-redesign`
 
-## 6. Multi-Page Vector PDF Viewer
-- **File:** `src/components/PdfViewer.tsx`
-- **Features:** Page navigation (Page X of Y), zoom (75% - 150%), 90-degree page rotation, official watermark & digital signature seal rendering, and drag-and-drop support for real user `.pdf` uploads.
-
----
-
-## 7. 4-Tier RBAC Architecture & Click-to-Autofill Credentials
-
-| Level | Persona Role | Demo Credential | Primary Capabilities |
-| :--- | :--- | :--- | :--- |
-| **Level 1** | **ST Scholar / Applicant** | `priya.meena@student.ac.in` (APAAR-2024-001234) | Smart Match wizard, encrypted vault, 7-day deficiency resolver, quarterly PhD milestone & contingency claims. |
-| **Level 2** | **Institute Nodal (INO)** | `kavita.soren@bitmesra.ac.in` (BIT Mesra) | 1-click bonafide admission attestation, supervisor milestone sign-off, NOS foreign tuition forex converter. |
-| **Level 3** | **MoTA Scrutiny Officer** | `rajesh.kumar@nic.in` (NIC-MOTA-DESK-42) | Split-Screen AI Document Workbench, 4 OCR test scenarios, Central ST Order & PVTG cross-checks, SMS/WhatsApp notice dispatch. |
-| **Level 4** | **Ministry Admin / Joint Secretary** | `js.tribal@mota.gov.in` (MoTA New Delhi) | KPI analytics, dynamic rules editor, composite merit calculation with quotas, WebCrypto DSC digital signing, PFMS DBT batch generator. |
+## 15. FUTURE DEVELOPMENT PRIORITIES
+1. **Database Integration:** Move from Zustand to Prisma + PostgreSQL.
+2. **Real Authentication:** Implement NextAuth (Auth.js) / Firebase with Aadhaar/OAuth.
+3. **File Storage:** Integrate AWS S3 or Supabase Storage for actual document uploads.
+4. **Production AI:** Integrate real ML models to replace dataset scenarios.

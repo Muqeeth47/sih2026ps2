@@ -24,17 +24,17 @@ export function formatDate(dateStr: string): string {
 
 export function getStatusColor(status: ApplicationStatus): string {
   const colors: Record<ApplicationStatus, string> = {
-    DRAFT: 'bg-slate-900/90 text-slate-300 border-slate-700',
+    DRAFT: 'bg-slate-50 text-slate-700 border-slate-300',
     SUBMITTED: 'bg-sky-950/70 text-sky-300 border-sky-800/70',
     INO_VERIFIED: 'bg-cyan-950/70 text-cyan-300 border-cyan-800/70',
-    AI_SCRUTINY: 'bg-amber-950/70 text-amber-300 border-amber-700/80',
-    DEFICIENCY_RAISED: 'bg-rose-950/80 text-rose-300 border-rose-700/80',
-    APPROVED: 'bg-emerald-950/70 text-emerald-300 border-emerald-700/80',
+    AI_SCRUTINY: 'bg-amber-950/70 text-orange-700 border-orange-300/80',
+    DEFICIENCY_RAISED: 'bg-red-50 text-red-600 border-rose-700/80',
+    APPROVED: 'bg-green-100/70 text-green-700 border-emerald-700/80',
     REJECTED: 'bg-red-950/80 text-red-300 border-red-700/80',
     SANCTIONED: 'bg-teal-950/70 text-teal-300 border-teal-700/80',
     DBT_DISBURSED: 'bg-emerald-900/80 text-emerald-200 border-emerald-600',
   };
-  return colors[status] ?? 'bg-slate-900 text-slate-400 border-slate-700';
+  return colors[status] ?? 'bg-white text-slate-400 border-slate-300';
 }
 
 export function getStatusLabel(status: ApplicationStatus): string {
@@ -54,9 +54,9 @@ export function getStatusLabel(status: ApplicationStatus): string {
 
 export function getConfidenceBadge(level: ConfidenceLevel): string {
   const badges: Record<ConfidenceLevel, string> = {
-    HIGH: 'bg-emerald-950/80 text-emerald-300 border-emerald-700/70',
-    MEDIUM: 'bg-amber-950/80 text-amber-300 border-amber-700/70',
-    LOW: 'bg-rose-950/90 text-rose-300 border-rose-700/80',
+    HIGH: 'bg-green-100 text-green-700 border-emerald-700/70',
+    MEDIUM: 'bg-amber-950/80 text-orange-700 border-orange-300/70',
+    LOW: 'bg-red-50/90 text-red-600 border-rose-700/80',
   };
   return badges[level];
 }
@@ -79,11 +79,11 @@ export function getSchemeColor(code: SchemeCode): string {
   const colors: Record<SchemeCode, string> = {
     NFST: 'bg-cyan-950/60 text-cyan-300 border-cyan-800/80',
     NOS: 'bg-sky-950/60 text-sky-300 border-sky-800/80',
-    TOP_CLASS: 'bg-amber-950/60 text-amber-300 border-amber-800/80',
+    TOP_CLASS: 'bg-amber-950/60 text-orange-700 border-amber-800/80',
     POST_MATRIC: 'bg-teal-950/60 text-teal-300 border-teal-800/80',
-    PRE_MATRIC: 'bg-slate-900 text-slate-300 border-slate-700',
+    PRE_MATRIC: 'bg-white text-slate-700 border-slate-300',
   };
-  return colors[code] ?? 'bg-slate-900 text-slate-400 border-slate-700';
+  return colors[code] ?? 'bg-white text-slate-400 border-slate-300';
 }
 
 export function computeCompositeScore(pgMarks: number, qsRank?: number): number {

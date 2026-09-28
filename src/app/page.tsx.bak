@@ -112,7 +112,7 @@ function TribalScholarApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#070b12] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-500/30 selection:text-emerald-200">
       {/* Top Header */}
       <Header
         currentTab={activeTab}
@@ -123,23 +123,23 @@ function TribalScholarApp() {
       {/* Main Container */}
       <main className="flex-1 w-full max-w-7xl mx-auto p-3 sm:p-5 flex flex-col gap-4">
         {/* Navigation Breadcrumb / Frame Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2 text-xs">
-          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2 text-xs">
+          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-9000">
             <button
               onClick={() => {
                 setShowLandingFrame(true);
                 updateUrlParams(currentRole, 'landing');
               }}
-              className="hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors"
+              className="hover:text-green-600 font-bold uppercase tracking-wider transition-colors"
             >
               MoTA Portal Home
             </button>
             <span>/</span>
-            <span className="text-slate-300 uppercase font-semibold">
+            <span className="text-slate-700 uppercase font-semibold">
               {currentRole.replace('_', ' ')}
             </span>
             <span>/</span>
-            <span className="text-emerald-400 font-mono uppercase font-bold">
+            <span className="text-green-600 font-mono uppercase font-bold">
               {showLandingFrame ? 'Single-Frame Landing Matrix' : activeTab}
             </span>
           </div>
@@ -151,12 +151,12 @@ function TribalScholarApp() {
                   setShowLandingFrame(true);
                   updateUrlParams(currentRole, 'landing');
                 }}
-                className="text-[11px] font-mono text-slate-400 hover:text-slate-200 px-2 py-0.5 border border-slate-800 bg-slate-900"
+                className="text-[11px] font-mono text-slate-9000 hover:text-slate-800 px-2 py-0.5 border border-slate-200 bg-white"
               >
                 ← Return to Landing Overview
               </button>
             )}
-            <span className="text-[10px] font-mono text-slate-500 hidden sm:inline">
+            <span className="text-[10px] font-mono text-slate-9000 hidden sm:inline">
               URL DEEP-LINK SYNC: ACTIVE
             </span>
           </div>
@@ -166,23 +166,23 @@ function TribalScholarApp() {
         {showLandingFrame && (
           <div className="flex flex-col gap-4">
             {/* National Mission Banner */}
-            <div className="border border-slate-800 bg-[#0b1120] p-4 md:p-6 relative overflow-hidden">
+            <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 md:p-6 relative overflow-hidden">
               <div className="flex flex-col gap-2 max-w-3xl">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-widest font-mono text-emerald-400 font-bold border border-emerald-800/80 bg-emerald-950/40 px-2 py-0.5">
+                  <span className="text-[10px] uppercase tracking-widest font-mono text-green-600 font-bold border border-green-200 bg-green-50 rounded-sm px-2 py-0.5">
                     SIH-26239 NATIONAL ARCHITECTURE
                   </span>
                   <span className="text-slate-600 font-mono">•</span>
-                  <span className="text-[10px] uppercase tracking-widest font-mono text-slate-400">
+                  <span className="text-[10px] uppercase tracking-widest font-mono text-slate-9000">
                     DIRECT BENEFIT TRANSFER (DBT) READY
                   </span>
                 </div>
 
-                <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-slate-50 leading-tight">
+                <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
                   AI-Enabled Scholarship and Fellowship Management System for Scheduled Tribes
                 </h2>
 
-                <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
+                <p className="text-xs md:text-sm text-slate-9000 leading-relaxed">
                   Eliminating manual paper scrutiny across the National Fellowship for ST (NFST),
                   National Overseas Scholarship (NOS), and Premier Institute Schemes. Featuring
                   multimodal AI document intelligence, tamper detection, Constitution Article 342
@@ -191,28 +191,28 @@ function TribalScholarApp() {
               </div>
 
               {/* Live DBT Metric Ticker Bar */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 pt-4 border-t border-slate-800/90 text-xs font-mono">
-                <div className="p-2.5 bg-slate-900/90 border border-slate-800">
-                  <span className="text-[10px] uppercase text-slate-500 block">TOTAL APPLICANTS</span>
-                  <span className="text-base md:text-lg font-bold text-slate-100">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 pt-4 border-t border-slate-200 text-xs font-mono">
+                <div className="p-2.5 bg-slate-50 rounded-md border border-slate-200">
+                  <span className="text-[10px] uppercase text-slate-9000 block">TOTAL APPLICANTS</span>
+                  <span className="text-base md:text-lg font-bold text-slate-900">
                     {KPI_DATA.totalApplicants.toLocaleString('en-IN')}
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-900/90 border border-slate-800">
-                  <span className="text-[10px] uppercase text-slate-500 block">DBT DISBURSED</span>
-                  <span className="text-base md:text-lg font-bold text-emerald-400">
+                <div className="p-2.5 bg-slate-50 rounded-md border border-slate-200">
+                  <span className="text-[10px] uppercase text-slate-9000 block">DBT DISBURSED</span>
+                  <span className="text-base md:text-lg font-bold text-green-600">
                     {formatCurrency(KPI_DATA.totalFundsSanctioned)}
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-900/90 border border-slate-800">
-                  <span className="text-[10px] uppercase text-slate-500 block">FEMALE SCHOLAR RATIO</span>
-                  <span className="text-base md:text-lg font-bold text-cyan-400">
+                <div className="p-2.5 bg-slate-50 rounded-md border border-slate-200">
+                  <span className="text-[10px] uppercase text-slate-9000 block">FEMALE SCHOLAR RATIO</span>
+                  <span className="text-base md:text-lg font-bold text-blue-600">
                     {(KPI_DATA.femaleRatio * 100).toFixed(1)}% (Quota Exceeded)
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-900/90 border border-slate-800">
-                  <span className="text-[10px] uppercase text-slate-500 block">PVTG PRIORITY BENEFICIARIES</span>
-                  <span className="text-base md:text-lg font-bold text-amber-300">
+                <div className="p-2.5 bg-slate-50 rounded-md border border-slate-200">
+                  <span className="text-[10px] uppercase text-slate-9000 block">PVTG PRIORITY BENEFICIARIES</span>
+                  <span className="text-base md:text-lg font-bold text-orange-600">
                     1,287 Direct Shortlists
                   </span>
                 </div>
@@ -220,38 +220,38 @@ function TribalScholarApp() {
             </div>
 
             {/* 4-TIER RBAC: CLICK TO AUTOFILL CREDENTIALS */}
-            <div className="border border-slate-800 bg-[#0b1120] p-4 flex flex-col gap-3">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+            <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
                 <div>
-                  <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-mono font-bold">
+                  <span className="text-[10px] uppercase tracking-widest text-green-600 font-mono font-bold">
                     4-TIER RBAC ARCHITECTURE
                   </span>
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-slate-900">
                     Select Persona to Click-to-Autofill Credentials &amp; Launch Console
                   </h3>
                 </div>
-                <span className="text-[11px] font-mono text-slate-500">
+                <span className="text-[11px] font-mono text-slate-9000">
                   SIMULATED NIC SSO / AADHAAR OTP / PKI TOKEN
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {/* Level 1: ST Scholar */}
-                <div className="border border-slate-800 bg-slate-900/80 p-3.5 flex flex-col justify-between hover:border-slate-600 transition-all">
+                <div className="border border-slate-200 bg-slate-50 rounded-lg p-3.5 flex flex-col justify-between hover:border-slate-400 transition-all">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-mono text-emerald-400 font-bold">
+                      <span className="text-[10px] uppercase font-mono text-green-600 font-bold">
                         LEVEL 1 PERSONA
                       </span>
-                      <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                      <ShieldCheck className="h-4 w-4 text-green-600" />
                     </div>
-                    <h4 className="text-sm font-bold text-slate-100">ST Scholar / Applicant</h4>
-                    <p className="text-[11px] text-slate-400 mt-1 mb-2 leading-relaxed">
+                    <h4 className="text-sm font-bold text-slate-900">ST Scholar / Applicant</h4>
+                    <p className="text-[11px] text-slate-9000 mt-1 mb-2 leading-relaxed">
                       Dynamic eligibility checker, document vault, 7-day deficiency resolver, and
                       quarterly fellowship tracker.
                     </p>
 
-                    <div className="p-2 bg-slate-950 border border-slate-800 text-[10px] font-mono text-slate-400 mb-3 space-y-0.5">
+                    <div className="p-2 bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-9000 mb-3 space-y-0.5">
                       <div>Name: Priya Meena</div>
                       <div>APAAR: APAAR-2024-001234</div>
                       <div>Auth: Aadhaar OTP / DigiLocker</div>
@@ -260,7 +260,7 @@ function TribalScholarApp() {
 
                   <button
                     onClick={() => handleRoleAutofill('APPLICANT', 'overview')}
-                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 flex items-center justify-center gap-1.5"
+                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 flex items-center justify-center gap-1.5"
                   >
                     <KeyRound className="h-3.5 w-3.5" />
                     Click to Autofill &amp; Login →
@@ -268,21 +268,21 @@ function TribalScholarApp() {
                 </div>
 
                 {/* Level 2: Institute Nodal Officer */}
-                <div className="border border-slate-800 bg-slate-900/80 p-3.5 flex flex-col justify-between hover:border-slate-600 transition-all">
+                <div className="border border-slate-200 bg-slate-50 rounded-lg p-3.5 flex flex-col justify-between hover:border-slate-400 transition-all">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-mono text-cyan-400 font-bold">
+                      <span className="text-[10px] uppercase font-mono text-blue-600 font-bold">
                         LEVEL 2 PERSONA
                       </span>
-                      <Building2 className="h-4 w-4 text-cyan-400" />
+                      <Building2 className="h-4 w-4 text-blue-600" />
                     </div>
-                    <h4 className="text-sm font-bold text-slate-100">Institute Nodal (INO)</h4>
-                    <p className="text-[11px] text-slate-400 mt-1 mb-2 leading-relaxed">
+                    <h4 className="text-sm font-bold text-slate-900">Institute Nodal (INO)</h4>
+                    <p className="text-[11px] text-slate-9000 mt-1 mb-2 leading-relaxed">
                       One-click bonafide admission attestation, supervisor milestone sign-offs, and NOS
                       foreign tuition forex conversion.
                     </p>
 
-                    <div className="p-2 bg-slate-950 border border-slate-800 text-[10px] font-mono text-slate-400 mb-3 space-y-0.5">
+                    <div className="p-2 bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-9000 mb-3 space-y-0.5">
                       <div>Name: Dr. Kavita Soren</div>
                       <div>Institute: BIT Mesra (.ac.in)</div>
                       <div>Auth: Verified Domain + 2FA</div>
@@ -291,7 +291,7 @@ function TribalScholarApp() {
 
                   <button
                     onClick={() => handleRoleAutofill('INSTITUTE_NODAL', 'inbox')}
-                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-cyan-600 hover:bg-cyan-500 text-white border border-cyan-500 flex items-center justify-center gap-1.5"
+                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 flex items-center justify-center gap-1.5"
                   >
                     <KeyRound className="h-3.5 w-3.5" />
                     Click to Autofill &amp; Login →
@@ -299,21 +299,21 @@ function TribalScholarApp() {
                 </div>
 
                 {/* Level 3: MoTA Scrutiny Officer */}
-                <div className="border border-slate-800 bg-slate-900/80 p-3.5 flex flex-col justify-between hover:border-slate-600 transition-all">
+                <div className="border border-slate-200 bg-slate-50 rounded-lg p-3.5 flex flex-col justify-between hover:border-slate-400 transition-all">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-mono text-amber-400 font-bold">
+                      <span className="text-[10px] uppercase font-mono text-orange-600 font-bold">
                         LEVEL 3 PERSONA
                       </span>
-                      <FileCheck2 className="h-4 w-4 text-amber-400" />
+                      <FileCheck2 className="h-4 w-4 text-orange-600" />
                     </div>
-                    <h4 className="text-sm font-bold text-slate-100">MoTA Scrutiny Officer</h4>
-                    <p className="text-[11px] text-slate-400 mt-1 mb-2 leading-relaxed">
+                    <h4 className="text-sm font-bold text-slate-900">MoTA Scrutiny Officer</h4>
+                    <p className="text-[11px] text-slate-9000 mt-1 mb-2 leading-relaxed">
                       Split-screen AI document scrutiny workbench, confidence badges, sub-caste order
                       matcher, and deduplication alerts.
                     </p>
 
-                    <div className="p-2 bg-slate-950 border border-slate-800 text-[10px] font-mono text-slate-400 mb-3 space-y-0.5">
+                    <div className="p-2 bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-9000 mb-3 space-y-0.5">
                       <div>Name: Rajesh Kumar, IAS</div>
                       <div>Desk: NIC-MOTA-DESK-42</div>
                       <div>Auth: NIC SSO (@nic.in)</div>
@@ -322,7 +322,7 @@ function TribalScholarApp() {
 
                   <button
                     onClick={() => handleRoleAutofill('SCRUTINY_OFFICER', 'workbench')}
-                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-amber-600 hover:bg-amber-500 text-white border border-amber-500 flex items-center justify-center gap-1.5"
+                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-orange-600 hover:bg-orange-700 text-white border border-orange-600 flex items-center justify-center gap-1.5"
                   >
                     <KeyRound className="h-3.5 w-3.5" />
                     Click to Autofill &amp; Login →
@@ -330,21 +330,21 @@ function TribalScholarApp() {
                 </div>
 
                 {/* Level 4: Joint Secretary / Admin */}
-                <div className="border border-slate-800 bg-slate-900/80 p-3.5 flex flex-col justify-between hover:border-slate-600 transition-all">
+                <div className="border border-slate-200 bg-slate-50 rounded-lg p-3.5 flex flex-col justify-between hover:border-slate-400 transition-all">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-mono text-rose-400 font-bold">
+                      <span className="text-[10px] uppercase font-mono text-red-600 font-bold">
                         LEVEL 4 PERSONA
                       </span>
-                      <Crown className="h-4 w-4 text-rose-400" />
+                      <Crown className="h-4 w-4 text-red-600" />
                     </div>
-                    <h4 className="text-sm font-bold text-slate-100">Joint Secretary (Admin)</h4>
-                    <p className="text-[11px] text-slate-400 mt-1 mb-2 leading-relaxed">
+                    <h4 className="text-sm font-bold text-slate-900">Joint Secretary (Admin)</h4>
+                    <p className="text-[11px] text-slate-9000 mt-1 mb-2 leading-relaxed">
                       Configurable scheme rules engine, automated merit calculation with quotas, and PFMS
                       batch sanction orders.
                     </p>
 
-                    <div className="p-2 bg-slate-950 border border-slate-800 text-[10px] font-mono text-slate-400 mb-3 space-y-0.5">
+                    <div className="p-2 bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-9000 mb-3 space-y-0.5">
                       <div>Authority: Ministry Admin</div>
                       <div>Scope: Apex Policy &amp; DBT</div>
                       <div>Auth: PKI Token / DSC Certificate</div>
@@ -353,7 +353,7 @@ function TribalScholarApp() {
 
                   <button
                     onClick={() => handleRoleAutofill('MINISTRY_ADMIN', 'kpi')}
-                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white border border-rose-500 flex items-center justify-center gap-1.5"
+                    className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-red-600 hover:bg-red-700 text-white border border-red-600 flex items-center justify-center gap-1.5"
                   >
                     <KeyRound className="h-3.5 w-3.5" />
                     Click to Autofill &amp; Login →
@@ -363,17 +363,17 @@ function TribalScholarApp() {
             </div>
 
             {/* STATUTORY SCHEME REPOSITORY MATRIX */}
-            <div className="border border-slate-800 bg-[#0b1120] p-4 flex flex-col gap-3">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
+            <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   MoTA Statutory Fellowship &amp; Scholarship Schemes Under Management
                 </span>
-                <span className="text-[10px] font-mono text-slate-500">5 ACTIVE NATIONAL PROGRAMS</span>
+                <span className="text-[10px] font-mono text-slate-9000">5 ACTIVE NATIONAL PROGRAMS</span>
               </div>
 
               <div className="overflow-x-auto w-full">
-                <table className="w-full text-left text-xs text-slate-300 border border-slate-800">
-                  <thead className="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-mono border-b border-slate-800">
+                <table className="w-full text-left text-xs text-slate-700 border border-slate-200">
+                  <thead className="bg-slate-50 rounded-md text-slate-9000 uppercase text-[10px] font-mono border-b border-slate-200">
                     <tr>
                       <th className="p-2.5">Code</th>
                       <th className="p-2.5">Scheme Name &amp; Purpose</th>
@@ -385,26 +385,26 @@ function TribalScholarApp() {
                   </thead>
                   <tbody className="divide-y divide-slate-800/80 font-normal">
                     {SCHEMES.map((scheme) => (
-                      <tr key={scheme.code} className="hover:bg-slate-900/40">
+                      <tr key={scheme.code} className="hover:bg-white/40">
                         <td className="p-2.5">
                           <span className={`text-[10px] font-mono font-bold px-2 py-0.5 border ${getSchemeColor(scheme.code)}`}>
                             {scheme.code}
                           </span>
                         </td>
                         <td className="p-2.5">
-                          <div className="font-semibold text-slate-100">{scheme.name}</div>
-                          <div className="text-[11px] text-slate-400">{scheme.description}</div>
+                          <div className="font-semibold text-slate-900">{scheme.name}</div>
+                          <div className="text-[11px] text-slate-9000">{scheme.description}</div>
                         </td>
-                        <td className="p-2.5 font-mono text-emerald-400">
+                        <td className="p-2.5 font-mono text-green-600">
                           {formatCurrency(scheme.maxIncome)} / yr
                         </td>
-                        <td className="p-2.5 font-mono text-slate-200">
+                        <td className="p-2.5 font-mono text-slate-800">
                           {scheme.minMarksPercent}% Marks
                         </td>
-                        <td className="p-2.5 font-mono font-bold text-slate-100">
+                        <td className="p-2.5 font-mono font-bold text-slate-900">
                           {formatCurrency(scheme.stipendMonthly)} / mo
                         </td>
-                        <td className="p-2.5 font-mono text-[11px] text-slate-400">
+                        <td className="p-2.5 font-mono text-[11px] text-slate-9000">
                           30% Female / 5% PwD / PVTG
                         </td>
                       </tr>
@@ -455,7 +455,7 @@ export default function Home() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#070b12] flex items-center justify-center text-slate-400 font-mono text-xs">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-9000 font-mono text-xs">
           INITIALIZING MoTA TRIBAL-SCHOLAR ARCHITECTURE...
         </div>
       }
