@@ -13,20 +13,20 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="w-full max-w-3xl border border-slate-700 bg-[#0b1120] p-6 shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="w-full max-w-3xl border border-slate-300 bg-white rounded-lg shadow-sm p-6 shadow-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
           <div className="flex items-center gap-2">
             {view === 'terms' ? (
-              <Scale className="h-5 w-5 text-emerald-400" />
+              <Scale className="h-5 w-5 text-green-600" />
             ) : (
-              <Lock className="h-5 w-5 text-emerald-400" />
+              <Lock className="h-5 w-5 text-green-600" />
             )}
             <div>
               <span className="text-[10px] uppercase tracking-widest text-slate-400 font-mono">
                 STATUTORY COMPLIANCE DOCUMENTATION
               </span>
-              <h2 className="text-lg font-bold text-slate-100">
+              <h2 className="text-lg font-bold text-slate-900">
                 {view === 'terms'
                   ? 'Terms & Conditions — MoTA Scholarship & Fellowship Regulations'
                   : 'Privacy Policy & Data Protection (DPDP Act 2023 Compliance)'}
@@ -35,17 +35,17 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-100 font-mono text-xs px-2.5 py-1 border border-slate-700 hover:bg-slate-800"
+            className="text-slate-400 hover:text-slate-900 font-mono text-xs px-2.5 py-1 border border-slate-300 hover:bg-slate-100"
           >
             ✕ CLOSE
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto pr-2 text-xs text-slate-300 space-y-4 font-normal leading-relaxed">
+        <div className="overflow-y-auto pr-2 text-xs text-slate-700 space-y-4 font-normal leading-relaxed">
           {view === 'terms' ? (
             <>
-              <div className="p-3 border border-emerald-900/60 bg-emerald-950/20 text-emerald-300">
+              <div className="p-3 border border-emerald-900/60 bg-green-50 text-green-700">
                 <strong>Statutory Notice:</strong> These regulations govern applications submitted under
                 the National Fellowship for ST (NFST), National Overseas Scholarship (NOS), Top Class
                 Education Scheme, and Post/Pre-Matric Schemes managed by the Ministry of Tribal Affairs
@@ -53,7 +53,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </div>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">1. Eligibility & Authenticity of ST Status</h3>
+                <h3 className="font-bold text-slate-900 text-sm">1. Eligibility & Authenticity of ST Status</h3>
                 <p>
                   Applicants must strictly belong to a Scheduled Tribe notified under Article 342 of the
                   Constitution of India for their respective State/Union Territory. Submission of forged,
@@ -64,7 +64,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">2. Non-Duplication Covenant (Zero Dual Benefit Rule)</h3>
+                <h3 className="font-bold text-slate-900 text-sm">2. Non-Duplication Covenant (Zero Dual Benefit Rule)</h3>
                 <p>
                   As per Ministry directives, no scholar is permitted to draw fellowship, scholarship, or
                   financial stipend simultaneously from any other Central Government agency (e.g., UGC,
@@ -76,7 +76,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">3. Income Ceiling Verification</h3>
+                <h3 className="font-bold text-slate-900 text-sm">3. Income Ceiling Verification</h3>
                 <p>
                   Total family income from all sources must not exceed the ceiling set under the respective
                   scheme (₹6,00,000 p.a. for NFST; ₹8,00,000 p.a. for NOS). Income certificates must be
@@ -86,7 +86,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">4. Milestone & Disbursement Obligations</h3>
+                <h3 className="font-bold text-slate-900 text-sm">4. Milestone & Disbursement Obligations</h3>
                 <p>
                   NFST PhD scholars must submit quarterly progress reports digitally endorsed by their
                   Research Supervisor and Institute Nodal Officer (INO). Failure to submit two consecutive
@@ -104,7 +104,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </div>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">1. Purpose of Data Processing</h3>
+                <h3 className="font-bold text-slate-900 text-sm">1. Purpose of Data Processing</h3>
                 <p>
                   MoTA collects and processes demographic information (Name, DOB, APAAR ID, Gender,
                   Category), educational qualifications, socioeconomic income proofs, and bank details
@@ -114,7 +114,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">2. Aadhaar Data Vault (ADV) Architecture</h3>
+                <h3 className="font-bold text-slate-900 text-sm">2. Aadhaar Data Vault (ADV) Architecture</h3>
                 <p>
                   In accordance with UIDAI Circulars, full Aadhaar numbers are never stored in plaintext
                   on any MoTA server. The system generates an irreversible SHA-256 cryptographic hash
@@ -124,7 +124,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">3. AI Document Scrutiny Safeguards</h3>
+                <h3 className="font-bold text-slate-900 text-sm">3. AI Document Scrutiny Safeguards</h3>
                 <p>
                   Uploaded caste certificates and marksheets are evaluated by the AI Document Intelligence
                   Engine for text extraction and pixel tamper detection. AI extraction results serve as an
@@ -134,7 +134,7 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="font-bold text-slate-100 text-sm">4. Data Subject Rights & Retention</h3>
+                <h3 className="font-bold text-slate-900 text-sm">4. Data Subject Rights & Retention</h3>
                 <p>
                   Under the DPDP Act 2023, scholars possess the right to grievance redressal regarding
                   erroneously extracted metadata and may file correction petitions via the Deficiency
@@ -147,14 +147,14 @@ export const TermsPrivacyModal: React.FC<TermsPrivacyModalProps> = ({ view, onCl
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between border-t border-slate-800 pt-3 mt-4 text-[11px] text-slate-500 font-mono">
-          <div className="flex items-center gap-1.5 text-emerald-400">
+        <div className="flex items-center justify-between border-t border-slate-200 pt-3 mt-4 text-[11px] text-slate-400 font-mono">
+          <div className="flex items-center gap-1.5 text-green-600">
             <CheckCircle2 className="h-3.5 w-3.5" />
             <span>Notified under MoTA Gazette Resolution No. 11015/01/2024-Scholarship</span>
           </div>
           <button
             onClick={onClose}
-            className="px-3 py-1 bg-slate-800 text-slate-200 hover:bg-slate-700 font-bold"
+            className="px-3 py-1 bg-slate-100 text-slate-800 hover:bg-slate-200 font-bold"
           >
             Acknowledge & Close
           </button>

@@ -64,9 +64,9 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
   return (
     <div className="w-full flex flex-col gap-4">
       {/* Sub-Navigation Header with Tab Links */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 bg-[#0b1120] p-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white rounded-lg shadow-sm p-2.5">
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-          <span className="text-[10px] uppercase tracking-wider font-mono text-slate-500 mr-2">
+          <span className="text-[10px] uppercase tracking-wider font-mono text-slate-400 mr-2">
             INO CONSOLE /
           </span>
           {[
@@ -79,8 +79,8 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
               onClick={() => onTabChange(tab.id)}
               className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider border transition-all ${
                 currentTab === tab.id
-                  ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
-                  : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                  ? 'border-green-500 bg-green-50 text-green-700'
+                  : 'border-slate-200 bg-white text-slate-400 hover:text-slate-800 hover:border-slate-300'
               }`}
             >
               {tab.label}
@@ -91,29 +91,29 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
         {/* Nodal Officer Credentials Metadata */}
         <div className="hidden lg:flex items-center gap-3 text-[11px] font-mono text-slate-400">
           <div>
-            INSTITUTION: <span className="text-slate-200">BIT MESRA (RANCHI)</span>
+            INSTITUTION: <span className="text-slate-800">BIT MESRA (RANCHI)</span>
           </div>
           <span>•</span>
           <div>
-            NODAL OFFICER: <span className="text-slate-200">DR. KAVITA SOREN</span>
+            NODAL OFFICER: <span className="text-slate-800">DR. KAVITA SOREN</span>
           </div>
         </div>
       </div>
 
       {verificationFeedback && (
-        <div className="p-3 border border-emerald-800 bg-emerald-950/40 text-emerald-300 text-xs font-mono">
+        <div className="p-3 border border-green-200 bg-green-50 text-green-700 text-xs font-mono">
           ✓ {verificationFeedback}
         </div>
       )}
 
       {/* TAB 1: INSTITUTIONAL INBOX & BONAFIDE VERIFICATION */}
       {currentTab === 'inbox' && (
-        <div className="border border-slate-800 bg-[#0b1120] p-4 flex flex-col gap-4">
-          <div className="border-b border-slate-800 pb-3">
-            <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-mono font-semibold">
+        <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
+          <div className="border-b border-slate-200 pb-3">
+            <span className="text-[10px] uppercase tracking-widest text-green-600 font-mono font-semibold">
               INSTITUTIONAL SCRUTINY &amp; BONAFIDE ATTESTATION
             </span>
-            <h3 className="text-base font-bold text-slate-100">
+            <h3 className="text-base font-bold text-slate-900">
               Pending Student Enrolments Awaiting Nodal Confirmation
             </h3>
             <p className="text-xs text-slate-400 mt-1">
@@ -123,8 +123,8 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
           </div>
 
           <div className="overflow-x-auto w-full">
-            <table className="w-full text-left text-xs text-slate-300 border border-slate-800">
-              <thead className="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-mono border-b border-slate-800">
+            <table className="w-full text-left text-xs text-slate-700 border border-slate-200">
+              <thead className="bg-slate-50 text-slate-400 uppercase text-[10px] font-mono border-b border-slate-200">
                 <tr>
                   <th className="p-2.5">Application ID</th>
                   <th className="p-2.5">Scholar Name</th>
@@ -135,18 +135,18 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
                   <th className="p-2.5 text-right">Bonafide Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80 font-normal">
+              <tbody className="divide-y divide-slate-200 font-normal">
                 {apps.map((a) => (
-                  <tr key={a.id} className="hover:bg-slate-900/60">
-                    <td className="p-2.5 font-mono text-[11px] font-bold text-cyan-400">{a.id}</td>
-                    <td className="p-2.5 font-semibold text-slate-100">{a.applicantName}</td>
+                  <tr key={a.id} className="hover:bg-white shadow-sm rounded-lg">
+                    <td className="p-2.5 font-mono text-[11px] font-bold text-blue-600">{a.id}</td>
+                    <td className="p-2.5 font-semibold text-slate-900">{a.applicantName}</td>
                     <td className="p-2.5">
                       <span className={`text-[10px] font-mono px-2 py-0.5 border ${getSchemeColor(a.schemeCode)}`}>
                         {a.schemeCode}
                       </span>
                     </td>
                     <td className="p-2.5 font-mono text-[11px] text-slate-400">{a.apaarId}</td>
-                    <td className="p-2.5 font-mono text-slate-200">{a.pgMarksPercent}%</td>
+                    <td className="p-2.5 font-mono text-slate-800">{a.pgMarksPercent}%</td>
                     <td className="p-2.5">
                       <span className={`text-[10px] font-mono px-2 py-0.5 border ${getStatusColor(a.status)}`}>
                         {getStatusLabel(a.status)}
@@ -156,12 +156,12 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
                       {a.status === 'SUBMITTED' ? (
                         <button
                           onClick={() => handleVerifyBonafide(a.id)}
-                          className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500"
+                          className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-green-600 hover:bg-green-700 text-white border border-green-500"
                         >
                           1-Click Attest Bonafide
                         </button>
                       ) : (
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">
+                        <span className="text-[10px] font-mono text-slate-400 uppercase">
                           ATTESTED ✓
                         </span>
                       )}
@@ -176,12 +176,12 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
 
       {/* TAB 2: MILESTONE SIGN-OFF */}
       {currentTab === 'milestones' && (
-        <div className="border border-slate-800 bg-[#0b1120] p-4 flex flex-col gap-4">
-          <div className="border-b border-slate-800 pb-3">
-            <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-mono font-semibold">
+        <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
+          <div className="border-b border-slate-200 pb-3">
+            <span className="text-[10px] uppercase tracking-widest text-green-600 font-mono font-semibold">
               SUPERVISOR RESEARCH GOVERNANCE (RULE 11B)
             </span>
-            <h3 className="text-base font-bold text-slate-100">
+            <h3 className="text-base font-bold text-slate-900">
               PhD Fellowship Quarterly Thesis Progress Sign-off
             </h3>
             <p className="text-xs text-slate-400 mt-1">
@@ -191,14 +191,14 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="border border-slate-800 bg-slate-900/60 p-3.5 flex flex-col gap-3">
+            <div className="border border-slate-200 bg-white shadow-sm rounded-lg p-3.5 flex flex-col gap-3">
               <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">
                 PENDING QUARTERLY MILESTONE SUBMISSION
               </span>
-              <div className="text-xs font-semibold text-slate-100">
-                Scholar: <span className="text-cyan-400">Priya Meena</span> (NFST PhD Scholar, Biochemistry)
+              <div className="text-xs font-semibold text-slate-900">
+                Scholar: <span className="text-blue-600">Priya Meena</span> (NFST PhD Scholar, Biochemistry)
               </div>
-              <div className="p-2.5 border border-slate-800 bg-slate-950 text-xs text-slate-300 leading-relaxed font-mono">
+              <div className="p-2.5 border border-slate-200 bg-slate-100 text-xs text-slate-700 leading-relaxed font-mono">
                 &quot;Synthesized crude extracts of endemic tribal medicinal plants from Aravali belt.
                 Conducted chromatographic isolation of bioactive flavonoids. Submitted preliminary data
                 to Indian Journal of Biotechnology.&quot;
@@ -212,14 +212,14 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
 
               <button
                 onClick={() => handleSignMilestone('APP-2024-NFST-001')}
-                className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 flex items-center justify-center gap-2"
+                className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-green-600 hover:bg-green-700 text-white border border-green-500 flex items-center justify-center gap-2"
               >
                 <ShieldCheck className="h-4 w-4" />
                 Digital Sign-Off Milestone &amp; Release Stipend →
               </button>
             </div>
 
-            <div className="border border-slate-800 bg-slate-900/60 p-3.5 flex flex-col justify-between">
+            <div className="border border-slate-200 bg-white shadow-sm rounded-lg p-3.5 flex flex-col justify-between">
               <div>
                 <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">
                   DIGITAL SIGNATURE AUDIT TRAIL
@@ -229,7 +229,7 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
                   MoTA Public Ledger for CAG audit compliance.
                 </p>
 
-                <div className="p-3 bg-slate-950 border border-slate-800/80 mt-3 text-[10px] font-mono text-slate-500 space-y-1">
+                <div className="p-3 bg-slate-100 border border-slate-100 mt-3 text-[10px] font-mono text-slate-400 space-y-1">
                   <div>SIGNER_ID: INO-JH-2021-089 (Dr. Kavita Soren)</div>
                   <div>DSC_EXPIRY: 2027-12-31</div>
                   <div>PKI_CHAIN: CCA India National Root CA</div>
@@ -242,12 +242,12 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
 
       {/* TAB 3: NOS FOREIGN LIAISON & FOREX */}
       {currentTab === 'nos_liaison' && (
-        <div className="border border-slate-800 bg-[#0b1120] p-4 flex flex-col gap-4">
-          <div className="border-b border-slate-800 pb-3">
-            <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-mono font-semibold">
+        <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
+          <div className="border-b border-slate-200 pb-3">
+            <span className="text-[10px] uppercase tracking-widest text-green-600 font-mono font-semibold">
               NATIONAL OVERSEAS SCHOLARSHIP (NOS) FOREIGN LIAISON &amp; FOREX
             </span>
-            <h3 className="text-base font-bold text-slate-100">
+            <h3 className="text-base font-bold text-slate-900">
               Foreign University Tuition Invoicing &amp; RBI Reference Exchange Calculator
             </h3>
             <p className="text-xs text-slate-400 mt-1">
@@ -258,8 +258,8 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Forex Calculator */}
-            <div className="border border-slate-800 bg-slate-900/60 p-3.5 flex flex-col gap-3">
-              <span className="text-[10px] uppercase font-mono tracking-wider text-cyan-400 flex items-center gap-1.5">
+            <div className="border border-slate-200 bg-white shadow-sm rounded-lg p-3.5 flex flex-col gap-3">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-blue-600 flex items-center gap-1.5">
                 <Globe2 className="h-3.5 w-3.5" />
                 RBI REFERENCE RATE TUITION WIRE CONVERTER
               </span>
@@ -272,7 +272,7 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
                   <select
                     value={selectedCurrency}
                     onChange={(e) => setSelectedCurrency(e.target.value as any)}
-                    className="w-full bg-slate-800 border border-slate-700 text-xs text-slate-200 p-2"
+                    className="w-full bg-slate-100 border border-slate-300 text-xs text-slate-800 p-2"
                   >
                     <option value="GBP">GBP (£) — United Kingdom (Oxford/Cambridge)</option>
                     <option value="USD">USD ($) — United States (MIT/Harvard)</option>
@@ -288,18 +288,18 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
                     type="number"
                     value={currencyAmount}
                     onChange={(e) => setCurrencyAmount(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 text-xs text-slate-200 p-2 font-mono"
+                    className="w-full bg-slate-100 border border-slate-300 text-xs text-slate-800 p-2 font-mono"
                   />
                 </div>
               </div>
 
               {/* Conversion Result Block */}
-              <div className="p-3 bg-slate-950 border border-emerald-900/60 flex items-center justify-between">
+              <div className="p-3 bg-slate-100 border border-emerald-900/60 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] uppercase font-mono text-slate-500 block">
+                  <span className="text-[10px] uppercase font-mono text-slate-400 block">
                     SANCTION DISBURSEMENT IN INDIAN RUPEES (INR)
                   </span>
-                  <span className="text-lg font-bold font-mono text-emerald-400">
+                  <span className="text-lg font-bold font-mono text-green-600">
                     {formatCurrency(convertedINR)}
                   </span>
                 </div>
@@ -309,20 +309,20 @@ export const InoView: React.FC<InoViewProps> = ({ currentTab, onTabChange }) => 
                 </div>
               </div>
 
-              <button className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-cyan-600 hover:bg-cyan-500 text-white border border-cyan-500">
+              <button className="w-full py-2 text-xs font-bold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white border border-blue-600">
                 Generate Ministry Foreign Wire Sanction Note →
               </button>
             </div>
 
             {/* University Offer & QS Verification */}
-            <div className="border border-slate-800 bg-slate-900/60 p-3.5 flex flex-col gap-2.5">
+            <div className="border border-slate-200 bg-white shadow-sm rounded-lg p-3.5 flex flex-col gap-2.5">
               <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">
                 LIAISON CASE: UNIVERSITY OF OXFORD (UK)
               </span>
-              <div className="text-xs text-slate-200 font-semibold">
-                Scholar: <span className="text-cyan-400">Arjun Munda</span> — DPhil in Computer Science
+              <div className="text-xs text-slate-800 font-semibold">
+                Scholar: <span className="text-blue-600">Arjun Munda</span> — DPhil in Computer Science
               </div>
-              <div className="p-2.5 border border-slate-800 bg-slate-950 text-xs text-slate-300 font-mono space-y-1">
+              <div className="p-2.5 border border-slate-200 bg-slate-100 text-xs text-slate-700 font-mono space-y-1">
                 <div>• QS World University Rank: #3 (Statutory Cut-off: &le; 500) — PASS ✓</div>
                 <div>• Department: Department of Computer Science, Parks Rd, Oxford</div>
                 <div>• Academic Term: Michaelmas 2024 - Trinity 2027</div>
