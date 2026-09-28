@@ -29,7 +29,7 @@
 
 ## Slide 3: Technical Approach & Methodology
 ### AI Document Intelligence, Deduplication & Cryptographic Verification
-- **Gemini 1.5 Flash Multimodal OCR** extracts, inspects, and cross-validates certificates against the Constitution Article 342 Presidential Order & 75 PVTG Master.
+- **Gemini 3.6 Flash Multimodal OCR** extracts, inspects, and cross-validates certificates against the Constitution Article 342 Presidential Order & 75 PVTG Master.
 - **Dual SHA-256 Deduplication Engine** cryptographically hashes Aadhaar and APAAR IDs against NSP 2.0 and Canara Bank SFMP registries.
 - **W3C WebCrypto ECDSA P-256 DSC Signing** generates digitally signed Gazette Sanction Orders mathematically auditable in-browser.
 
@@ -107,7 +107,7 @@
          ├────────────────────────────────────────┬────────────────────────────────────────┐
          ▼                                        ▼                                        ▼
 [ AI & SCRUTINY ENGINE ]               [ STATUTORY DATASETS ]               [ DATABASE & STORAGE ]
-  • Google Gemini 1.5 Flash              • Central ST Presidential Order      • Firebase Firestore
+  • Google Gemini 3.6 Flash              • Central ST Presidential Order      • Firebase Firestore
     (OCR & Anomaly Detection)              (Article 342 Gazette Master)         (Isolated "mota-scholar-db")
   • Deterministic Gov Rule Validator     • 75-PVTG Master Registry            • Firebase Storage
   • Multi-Page PDF Document Parser       • AISHE Code Master (NIRF/MoE)         (AES-256 Encrypted Vault)
