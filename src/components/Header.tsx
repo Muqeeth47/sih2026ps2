@@ -71,6 +71,8 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
   const [isOnline, setIsOnline] = useState(true);
   const [mounted, setMounted] = useState(false);
 
+  const [currentTime, setCurrentTime] = useState<string>('');
+
   useEffect(() => {
     setMounted(true);
     setIsOnline(navigator.onLine);
@@ -78,9 +80,28 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
     const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(
+        now.toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        }) + ' IST'
+      );
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      clearInterval(interval);
     };
   }, []);
 
@@ -123,13 +144,6 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
             </h1>
           </div>
         </div>
-        <div className="hidden sm:block w-[1px] h-[18px] bg-slate-300 mx-1 shrink-0" />
-        <img 
-          src="/Ministry_of_Tribal_Affairs.svg" 
-          alt="Ministry of Tribal Affairs" 
-          className="h-6 sm:h-8 w-auto object-contain shrink-0"
-        />
-      </div>
 
         {/* Right: Role Switcher & Autofill Action */}
         <div className="flex items-center gap-2 md:gap-3">
@@ -184,60 +198,6 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
             </button>
           </div>
         </div>
-
-        {mounted && (
-          <>
-            <button
-              onClick={() => setShowRoleModal(true)}
-              className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-xs font-bold transition-colors hover:bg-blue-100"
-              title="Click to Switch Role"
-            >
-               <span>Switch Role</span>
-               <KeyRound size={12} />
-            </button>
-
-            {/* Compact Role Badge */}
-            <div
-              className="flex items-center gap-1 px-2 py-1 rounded-md text-[0.68rem] font-extrabold"
-              style={{
-                background: currentRole === 'APPLICANT' ? '#e0f2fe' : currentRole === 'INSTITUTE_NODAL' ? '#ede9fe' : currentRole === 'SCRUTINY_OFFICER' ? '#fef9ec' : '#f0fdf4',
-                color: currentRole === 'APPLICANT' ? '#0f5ca8' : currentRole === 'INSTITUTE_NODAL' ? '#7c3aed' : currentRole === 'SCRUTINY_OFFICER' ? '#b45309' : '#065f46',
-                border: `1px solid ${currentRole === 'APPLICANT' ? '#bae6fd' : currentRole === 'INSTITUTE_NODAL' ? '#ddd6fe' : currentRole === 'SCRUTINY_OFFICER' ? '#fde68a' : '#bbf7d0'}`
-              }}
-            >
-               <span>
-                  {currentRole === 'APPLICANT' ? 'L1' :
-                   currentRole === 'INSTITUTE_NODAL' ? 'L2' :
-                   currentRole === 'SCRUTINY_OFFICER' ? 'L3' : 'L4'}
-               </span>
-            </div>
-
-            {/* User Badge - desktop only */}
-            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="w-6 h-6 rounded-full bg-[#0f5ca8] flex items-center justify-center text-[0.68rem] font-extrabold text-white shrink-0">
-                {currentUser?.name?.charAt(0) ?? 'U'}
-              </div>
-              <div>
-                <div className="text-[0.72rem] font-bold text-slate-900 leading-tight">
-                  {currentUser?.name}
-                </div>
-                <div className="text-[0.62rem] text-slate-500 font-mono">
-                  {ROLES_META.find(r => r.role === currentRole)?.label}
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Legal Links */}
-            <div className="hidden md:flex items-center gap-2 border-l border-slate-200 pl-2 ml-1">
-              <button onClick={() => onOpenLegal('terms')} className="text-[10px] uppercase font-bold text-slate-500 hover:text-slate-800 tracking-wider">
-                Terms
-              </button>
-              <button onClick={() => onOpenLegal('privacy')} className="text-[10px] uppercase font-bold text-slate-500 hover:text-slate-800 tracking-wider">
-                Privacy
-              </button>
-            </div>
-          </>
-        )}
       </div>
 
       {/* Role Selection & Click-to-Autofill Modal */}
