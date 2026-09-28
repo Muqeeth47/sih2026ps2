@@ -90,7 +90,6 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
 
   const handleSelectRole = (r: Role) => {
     setRole(r);
-    // Switch default tab depending on role
     if (r === 'APPLICANT') onTabChange('overview');
     else if (r === 'INSTITUTE_NODAL') onTabChange('inbox');
     else if (r === 'SCRUTINY_OFFICER') onTabChange('queue');
@@ -99,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-[#070b12]/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur-md shadow-sm">
       {/* Tricolor National Identity Ribbon */}
       <div className="h-1 w-full bg-gradient-to-r from-orange-500 via-white to-emerald-600" />
 
@@ -107,22 +106,22 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
       <div className="flex h-14 w-full items-center justify-between px-3 md:px-6">
         {/* Left: Ministry Branding */}
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center border border-slate-700 bg-slate-900 text-slate-100 font-bold text-xs tracking-tighter">
+          <div className="flex h-9 w-9 items-center justify-center border border-gray-200 bg-[#0f2a5e] text-white font-bold text-xs tracking-tighter">
             MoTA
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-widest text-slate-400 font-medium">
+              <span className="text-xs uppercase tracking-widest text-gray-500 font-medium">
                 GOVERNMENT OF INDIA
               </span>
-              <span className="text-slate-600">/</span>
-              <span className="text-xs uppercase tracking-widest text-emerald-400 font-semibold">
+              <span className="text-gray-300">/</span>
+              <span className="text-xs uppercase tracking-widest text-green-600 font-semibold">
                 SIH-26239
               </span>
             </div>
-            <h1 className="text-sm md:text-base font-bold tracking-tight text-slate-100 flex items-center gap-1.5">
+            <h1 className="text-sm md:text-base font-bold tracking-tight text-gray-900 flex items-center gap-1.5">
               <span>TribalScholar-AI</span>
-              <span className="text-xs font-normal text-slate-400 hidden sm:inline">
+              <span className="text-xs font-normal text-gray-500 hidden sm:inline">
                 — Ministry of Tribal Affairs
               </span>
             </h1>
@@ -133,50 +132,50 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
         <div className="flex items-center gap-2 md:gap-3">
           {/* Live Clock Metadata */}
           <div className="hidden lg:flex flex-col text-right">
-            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-mono">
+            <span className="text-[10px] uppercase tracking-wider text-gray-400 font-mono">
               SECURE GOVERNMENT LINK
             </span>
-            <span className="text-xs font-mono text-slate-300">{currentTime || 'SYNCING...'}</span>
+            <span className="text-xs font-mono text-gray-600">{currentTime || 'SYNCING...'}</span>
           </div>
 
-          <div className="h-6 w-px bg-slate-800 hidden lg:block" />
+          <div className="h-6 w-px bg-gray-200 hidden lg:block" />
 
           {/* Active Persona Badge with Quick Autofill Trigger */}
           <button
             onClick={() => setShowRoleModal(true)}
-            className="flex items-center gap-2 border border-slate-700 bg-slate-900/90 px-2.5 py-1.5 text-left hover:border-slate-500 transition-colors"
+            className="flex items-center gap-2 border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-left hover:border-gray-300 hover:bg-gray-100 transition-colors"
             title="Click to Switch Role & Autofill Credentials"
           >
-            <div className="flex h-6 w-6 items-center justify-center bg-slate-800 text-emerald-400 text-xs font-mono">
+            <div className="flex h-6 w-6 items-center justify-center bg-[#0f2a5e] text-white text-xs font-mono">
               {currentRole === 'APPLICANT' && 'L1'}
               {currentRole === 'INSTITUTE_NODAL' && 'L2'}
               {currentRole === 'SCRUTINY_OFFICER' && 'L3'}
               {currentRole === 'MINISTRY_ADMIN' && 'L4'}
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1">
+              <span className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold flex items-center gap-1">
                 <span>{ROLES_META.find((m) => m.role === currentRole)?.label}</span>
-                <span className="text-emerald-400">●</span>
+                <span className="text-green-500">●</span>
               </span>
-              <span className="text-xs text-slate-200 truncate max-w-[120px] md:max-w-[180px]">
+              <span className="text-xs text-gray-700 truncate max-w-[120px] md:max-w-[180px]">
                 {currentUser?.name || 'Authenticated'}
               </span>
             </div>
-            <KeyRound className="h-3.5 w-3.5 text-slate-400 ml-1" />
+            <KeyRound className="h-3.5 w-3.5 text-gray-400 ml-1" />
           </button>
 
           {/* Quick Legal Links */}
-          <div className="hidden md:flex items-center gap-2 border-l border-slate-800 pl-2">
+          <div className="hidden md:flex items-center gap-2 border-l border-gray-200 pl-2">
             <button
               onClick={() => onOpenLegal('terms')}
-              className="text-xs text-slate-400 hover:text-slate-200 uppercase tracking-wider font-mono text-[11px]"
+              className="text-xs text-gray-500 hover:text-gray-800 uppercase tracking-wider font-mono text-[11px]"
             >
               Terms
             </button>
-            <span className="text-slate-700">/</span>
+            <span className="text-gray-300">/</span>
             <button
               onClick={() => onOpenLegal('privacy')}
-              className="text-xs text-slate-400 hover:text-slate-200 uppercase tracking-wider font-mono text-[11px]"
+              className="text-xs text-gray-500 hover:text-gray-800 uppercase tracking-wider font-mono text-[11px]"
             >
               Privacy
             </button>
@@ -186,27 +185,27 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
 
       {/* Role Selection & Click-to-Autofill Modal */}
       {showRoleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl border border-slate-700 bg-[#0b1120] p-4 md:p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-2xl border border-gray-200 bg-white p-4 md:p-6 shadow-2xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
               <div>
-                <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-mono font-semibold">
+                <span className="text-[10px] uppercase tracking-widest text-green-600 font-mono font-semibold">
                   RBAC 4-TIER SECURITY CONTROLLER
                 </span>
-                <h3 className="text-lg font-bold text-slate-100">
+                <h3 className="text-lg font-bold text-gray-900">
                   Switch Role / Click-to-Autofill Credentials
                 </h3>
               </div>
               <button
                 onClick={() => setShowRoleModal(false)}
-                className="text-slate-400 hover:text-slate-100 font-mono text-sm px-2 py-1 border border-slate-700 hover:bg-slate-800"
+                className="text-gray-500 hover:text-gray-800 font-mono text-sm px-2 py-1 border border-gray-200 hover:bg-gray-100"
               >
                 ✕ ESC
               </button>
             </div>
 
-            <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
               Select any role to automatically simulate NIC SSO / Aadhaar OTP / DSC PKI
               authentication with pre-seeded MoTA production profiles.
             </p>
@@ -222,33 +221,33 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
                     onClick={() => handleSelectRole(item.role)}
                     className={`flex flex-col text-left p-3 border transition-all ${
                       isCurrent
-                        ? 'border-emerald-500 bg-emerald-950/20'
-                        : 'border-slate-800 bg-slate-900/60 hover:border-slate-600 hover:bg-slate-900'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full mb-1.5">
                       <div className="flex items-center gap-2">
-                        <Icon className="h-4 w-4 text-emerald-400" />
-                        <span className="text-xs font-bold text-slate-200">{item.label}</span>
+                        <Icon className="h-4 w-4 text-green-600" />
+                        <span className="text-xs font-bold text-gray-800">{item.label}</span>
                       </div>
                       {isCurrent ? (
-                        <span className="text-[9px] uppercase tracking-wider font-mono text-emerald-300 bg-emerald-950/80 border border-emerald-800 px-1 py-0.5">
+                        <span className="text-[9px] uppercase tracking-wider font-mono text-blue-700 bg-blue-100 border border-blue-300 px-1 py-0.5">
                           ACTIVE
                         </span>
                       ) : (
-                        <span className="text-[9px] uppercase tracking-wider font-mono text-slate-400 bg-slate-800 px-1 py-0.5">
+                        <span className="text-[9px] uppercase tracking-wider font-mono text-gray-500 bg-gray-100 border border-gray-200 px-1 py-0.5">
                           AUTOFILL
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-400 mb-2">{item.sub}</span>
+                    <span className="text-[11px] text-gray-500 mb-2">{item.sub}</span>
 
-                    <div className="mt-auto border-t border-slate-800/80 pt-1.5 text-[10px] font-mono text-slate-500 flex flex-col gap-0.5">
+                    <div className="mt-auto border-t border-gray-200 pt-1.5 text-[10px] font-mono text-gray-500 flex flex-col gap-0.5">
                       <div>
-                        <span className="text-slate-400">EMAIL:</span> {item.email}
+                        <span className="text-gray-400">EMAIL:</span> {item.email}
                       </div>
                       <div>
-                        <span className="text-slate-400">AUTH ID:</span> {item.idProof}
+                        <span className="text-gray-400">AUTH ID:</span> {item.idProof}
                       </div>
                     </div>
                   </button>
@@ -257,9 +256,9 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
             </div>
 
             {/* Statutory Compliance Footer */}
-            <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-[11px] text-slate-500 font-mono">
+            <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-[11px] text-gray-500 font-mono">
               <span className="flex items-center gap-1">
-                <Lock className="h-3 w-3 text-emerald-500" />
+                <Lock className="h-3 w-3 text-green-600" />
                 Aadhaar Data Vault (ADV) & NIC Guidelines Compliant
               </span>
               <button
@@ -267,7 +266,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, onOpenL
                   setShowRoleModal(false);
                   onOpenLegal('terms');
                 }}
-                className="underline hover:text-slate-300"
+                className="underline hover:text-gray-800"
               >
                 Terms of Service
               </button>
