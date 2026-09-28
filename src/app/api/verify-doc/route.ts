@@ -1,22 +1,88 @@
 import { NextResponse } from 'next/server';
+import { GoogleGenAI } from '@google/genai';
 import type { AIExtractionResult, DocumentType } from '@/lib/types';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { docType, fileName, applicantName } = body as {
+    const { docType, fileName, applicantName, fileBase64, mimeType } = body as {
       docType: DocumentType;
       fileName?: string;
       applicantName?: string;
+      fileBase64?: string;
+      mimeType?: string;
     };
 
-    // Simulate AI document extraction latency
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
+
+    // 1. LIVE GOOGLE GEMINI 2.5 FLASH PATHWAY (When GEMINI_API_KEY is configured)
+    if (apiKey) {
+      try {
+        const ai = new GoogleGenAI({ apiKey });
+
+        const prompt = `You are an expert Government of India Document Intelligence Inspector for the Ministry of Tribal Affairs (MoTA).
+Analyze the provided document (${docType}, fileName: "${fileName || 'document.pdf'}", applicantName: "${applicantName || 'Priya Meena'}").
+Extract structured metadata and inspect for document tampering, pixel anomalies, or date expiration.
+
+Return ONLY a valid JSON object matching this schema:
+{
+  "applicantName": "Full name on document",
+  "fatherName": "Father's name if present",
+  "certificateNumber": "Registration or certificate number",
+  "issuingAuthority": "Officer designation and jurisdiction",
+  "incomeAmount": number (if income certificate),
+  "subCaste": "Sub-caste or tribe name (if caste certificate)",
+  "issueDate": "YYYY-MM-DD or readable date",
+  "validUntil": "Validity date or PERMANENT",
+  "confidenceScore": number between 0 and 100,
+  "confidenceLevel": "HIGH" | "MEDIUM" | "LOW",
+  "anomalies": ["list of detected tampering, blur, mismatch, or expiration issues, or empty if clean"],
+  "extractedFields": { "key": "value" }
+}`;
+
+        const contents: any[] = [];
+        if (fileBase64 && mimeType) {
+          contents.push({
+            inlineData: {
+              data: fileBase64.replace(/^data:image\/\w+;base64,/, ''),
+              mimeType: mimeType || 'image/jpeg',
+            },
+          });
+        }
+        contents.push({ text: prompt });
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents,
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+
+        if (response.text) {
+          const parsed = JSON.parse(response.text) as AIExtractionResult;
+          return NextResponse.json({
+            success: true,
+            provider: 'GOOGLE_GEMINI_2_5_FLASH',
+            extraction: parsed,
+          });
+        }
+      } catch (geminiError: any) {
+        console.warn(
+          '[Gemini AI] Live API call failed, falling back to deterministic sandbox:',
+          geminiError?.message || geminiError
+        );
+      }
+    }
+
+    // 2. DETERMINISTIC HIGH-FIDELITY SANDBOX PATHWAY (Runs when key is not provided or offline)
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     let extraction: AIExtractionResult;
 
     if (docType === 'CASTE_CERTIFICATE') {
-      const isSuspect = fileName?.toLowerCase().includes('blur') || fileName?.toLowerCase().includes('fake');
+      const isSuspect =
+        fileName?.toLowerCase().includes('blur') || fileName?.toLowerCase().includes('fake');
       extraction = {
         applicantName: applicantName || 'Priya Meena',
         fatherName: 'Ramkishan Meena',
@@ -38,7 +104,8 @@ export async function POST(req: Request) {
         },
       };
     } else if (docType === 'INCOME_CERTIFICATE') {
-      const isExpired = fileName?.toLowerCase().includes('old') || fileName?.toLowerCase().includes('expired');
+      const isExpired =
+        fileName?.toLowerCase().includes('old') || fileName?.toLowerCase().includes('expired');
       extraction = {
         applicantName: applicantName || 'Arjun Munda',
         fatherName: 'Mangal Munda',
@@ -107,7 +174,12 @@ export async function POST(req: Request) {
       };
     }
 
-    return NextResponse.json({ success: true, extraction });
+    return NextResponse.json({
+      success: true,
+      provider: 'MOTA_SANDBOX_AI_ENGINE',
+      hasGeminiApiKey: Boolean(apiKey),
+      extraction,
+    });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Extraction failed';
     return NextResponse.json({ success: false, error: msg }, { status: 500 });
