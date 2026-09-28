@@ -51,8 +51,10 @@ Return ONLY a valid JSON object matching this schema:
         }
         contents.push({ text: prompt });
 
+        const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: modelName,
           contents,
           config: {
             responseMimeType: 'application/json',
@@ -63,7 +65,7 @@ Return ONLY a valid JSON object matching this schema:
           const parsed = JSON.parse(response.text) as AIExtractionResult;
           return NextResponse.json({
             success: true,
-            provider: 'GOOGLE_GEMINI_2_5_FLASH',
+            provider: `GOOGLE_GEMINI (${modelName})`,
             extraction: parsed,
           });
         }
