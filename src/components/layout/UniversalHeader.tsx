@@ -18,11 +18,36 @@ export const UniversalHeader: React.FC = () => {
     router.push('/');
   };
 
+  const [isOnline, setIsOnline] = useState(true);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsOnline(navigator.onLine);
+      const on = () => setIsOnline(true);
+      const off = () => setIsOnline(false);
+      window.addEventListener('online', on);
+      window.addEventListener('offline', off);
+      return () => {
+        window.removeEventListener('online', on);
+        window.removeEventListener('offline', off);
+      };
+    }
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur shadow-sm">
       {/* Top Utility Bar */}
       <div className="bg-slate-900 text-white text-xs py-1.5 px-4 md:px-6 lg:px-8 flex justify-between items-center">
-        <div>Government of India</div>
+        <div className="flex items-center gap-3">
+          <span>Government of India</span>
+          <span className="text-slate-600 hidden sm:inline">|</span>
+          <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono">
+            <span className={`h-2 w-2 rounded-full ${isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+            <span className={isOnline ? 'text-emerald-400' : 'text-amber-400'}>
+              {isOnline ? 'PWA Synced (Online)' : 'Offline Cache (Auto-Sync)'}
+            </span>
+          </span>
+        </div>
         <div className="flex items-center gap-4">
           <button className="hover:text-blue-300 transition-colors">A-</button>
           <button className="hover:text-blue-300 transition-colors">A</button>
@@ -30,6 +55,7 @@ export const UniversalHeader: React.FC = () => {
           <div className="h-3 w-px bg-slate-600"></div>
           <button className="hover:text-blue-300 transition-colors">English</button>
           <button className="hover:text-blue-300 transition-colors">हिन्दी</button>
+          <button className="hover:text-blue-300 transition-colors">ᱥᱟᱱᱛᱟᱲᱤ</button>
         </div>
       </div>
 

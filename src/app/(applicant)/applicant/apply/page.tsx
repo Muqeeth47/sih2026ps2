@@ -14,6 +14,17 @@ function ApplyContent() {
   const [step, setStep] = useState(1);
   const [isEligible, setIsEligible] = useState<boolean | null>(null);
 
+  const [digiLockerSynced, setDigiLockerSynced] = useState(false);
+  const [isSyncingDigiLocker, setIsSyncingDigiLocker] = useState(false);
+
+  const handleFetchDigiLocker = () => {
+    setIsSyncingDigiLocker(true);
+    setTimeout(() => {
+      setIsSyncingDigiLocker(false);
+      setDigiLockerSynced(true);
+    }, 1200);
+  };
+
   const handleCheckEligibility = () => {
     setIsEligible(true); // Mocking positive eligibility for prototype
     setTimeout(() => setStep(2), 1500);
@@ -139,16 +150,65 @@ function ApplyContent() {
 
         {step === 3 && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Document Upload & AI Verification</h2>
-            <p className="text-slate-500">Please upload the required scheme-specific documents.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold">Document Upload & AI Verification</h2>
+                <p className="text-slate-500">Please upload required certificates or pull them instantly via DigiLocker.</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleFetchDigiLocker}
+                disabled={isSyncingDigiLocker || digiLockerSynced}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all ${
+                  digiLockerSynced
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                <CheckCircle className="h-4 w-4" />
+                {isSyncingDigiLocker
+                  ? 'Connecting to DigiLocker...'
+                  : digiLockerSynced
+                  ? 'DigiLocker Verified (Consent #DL-2026-ST)'
+                  : 'Fetch from DigiLocker / APAAR'}
+              </button>
+            </div>
+
+            {digiLockerSynced && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-emerald-900 text-sm flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 shrink-0" />
+                  <span>
+                    <strong>DigiLocker Consent Authenticated:</strong> 3 statutory records pulled from National Academic Depository (NAD) & State Land/Revenue Authority.
+                  </span>
+                </div>
+                <span className="text-xs font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">SHA-256 SEALED</span>
+              </div>
+            )}
             
             <div className="space-y-4">
               {scheme.requiredDocs.map(doc => (
                 <div key={doc} className="flex flex-col md:flex-row items-center justify-between p-4 border border-slate-200 rounded-xl bg-slate-50">
-                  <div className="font-semibold text-slate-700">{doc.replace('_', ' ')}</div>
-                  <button className="flex items-center gap-2 bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-100 mt-3 md:mt-0">
-                    <Upload className="h-4 w-4" /> Upload
-                  </button>
+                  <div>
+                    <div className="font-semibold text-slate-700">{doc.replace('_', ' ')}</div>
+                    {digiLockerSynced ? (
+                      <div className="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
+                        <span>● Verified via DigiLocker</span>
+                        <span className="text-slate-400 font-mono">(ID: DL-ST-{doc.slice(0, 3)}-9841)</span>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-slate-400">PDF, JPG, or PNG up to 5MB</div>
+                    )}
+                  </div>
+                  {digiLockerSynced ? (
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg">
+                      ✓ Auto-Attached
+                    </span>
+                  ) : (
+                    <button className="flex items-center gap-2 bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-100 mt-3 md:mt-0">
+                      <Upload className="h-4 w-4" /> Upload
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
