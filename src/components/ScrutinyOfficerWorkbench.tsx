@@ -160,9 +160,9 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
   return (
     <div className="w-full flex flex-col gap-3">
       {/* Sub-navigation bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-white p-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white rounded-lg shadow-sm p-2.5">
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-          <span className="text-[10px] uppercase tracking-wider font-mono text-gray-500 mr-2">
+          <span className="text-[10px] uppercase tracking-wider font-mono text-slate-400 mr-2">
             SCRUTINY CONSOLE /
           </span>
           {[
@@ -174,8 +174,8 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
               onClick={() => onTabChange(tab.id)}
               className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider border transition-all ${
                 currentTab === tab.id
-                  ? 'border-blue-600 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-green-500 bg-green-50 text-green-700'
+                  : 'border-slate-200 bg-white text-slate-400 hover:text-slate-800 hover:border-slate-300'
               }`}
             >
               {tab.label}
@@ -184,13 +184,13 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
         </div>
 
         {/* Scrutiny Officer Badge */}
-        <div className="hidden lg:flex items-center gap-3 text-[11px] font-mono text-gray-500">
+        <div className="hidden lg:flex items-center gap-3 text-[11px] font-mono text-slate-400">
           <div>
-            DESK: <span className="text-gray-900">NIC-MOTA-DESK-42</span>
+            DESK: <span className="text-slate-800">NIC-MOTA-DESK-42</span>
           </div>
           <span>•</span>
           <div>
-            OFFICER: <span className="text-gray-900">RAJESH KUMAR, IAS</span>
+            OFFICER: <span className="text-slate-800">RAJESH KUMAR, IAS</span>
           </div>
         </div>
       </div>
@@ -202,13 +202,13 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
       )}
 
       {/* 4 OFFICIAL OCR TEST SCENARIOS SELECTOR STRIP */}
-      <div className="border border-gray-200 bg-gray-50 p-2.5 flex flex-col gap-2">
+      <div className="border border-slate-800 bg-[#080d19] p-2.5 flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] uppercase font-mono tracking-widest text-green-600 font-bold flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-green-600" />
+          <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
             OFFICIAL DOCUMENT AI TEST DATASETS (4 STATUTORY VERIFICATION SCENARIOS)
           </span>
-          <span className="text-[10px] font-mono text-gray-500">
+          <span className="text-[10px] font-mono text-slate-500">
             CLICK ANY SCENARIO TO TEST REAL-TIME EXTRACTION &amp; CHECKS
           </span>
         </div>
@@ -220,20 +220,20 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
               onClick={() => handleSelectScenario(scen)}
               className={`p-2 text-left border transition-all flex flex-col justify-between ${
                 activeScenario.id === scen.id
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md'
-                  : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                  ? 'border-cyan-500 bg-cyan-950/40 text-cyan-200 shadow-md'
+                  : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:bg-slate-900'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-mono font-bold uppercase text-gray-900">
+                <span className="text-[10px] font-mono font-bold uppercase text-slate-200">
                   {scen.category.replace('_', ' ')}
                 </span>
                 <span className={`text-[8px] font-mono px-1 py-0.5 border ${scen.badgeColor}`}>
                   {scen.badgeLabel}
                 </span>
               </div>
-              <span className="text-xs font-semibold text-gray-900 truncate">{scen.title}</span>
-              <span className="text-[10px] font-mono text-gray-500 mt-1">
+              <span className="text-xs font-semibold text-slate-100 truncate">{scen.title}</span>
+              <span className="text-[10px] font-mono text-slate-500 mt-1">
                 {scen.applicantName} ({scen.subCaste}, {scen.state})
               </span>
             </button>
@@ -245,17 +245,17 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
       {currentTab === 'workbench' && (
         <div className="flex flex-col gap-3">
           {/* Header Bar with Active Candidate Metadata & Action Buttons */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border border-gray-200 bg-white p-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border border-slate-800 bg-[#0b1120] p-3">
             <div className="flex items-center gap-3">
               <div>
-                <span className="text-[10px] uppercase font-mono tracking-widest text-gray-500 block">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 block">
                   ACTIVE SCRUTINY DOSSIER
                 </span>
-                <span className="text-sm font-bold text-gray-900 font-mono">
+                <span className="text-sm font-bold text-slate-100 font-mono">
                   {activeScenario.applicantName} (APAAR: {activeScenario.apaarId})
                 </span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 border border-blue-200 bg-blue-50 text-blue-700">
+              <span className="text-[10px] font-mono px-2 py-0.5 border border-cyan-800 bg-cyan-950/60 text-cyan-300">
                 {selectedApp.schemeCode}
               </span>
               <span className={`text-[10px] font-mono px-2 py-0.5 border ${getStatusColor(selectedApp.status)}`}>
@@ -267,7 +267,7 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
             <div className="flex items-center gap-2">
               <button
                 onClick={handleApprove}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-green-700 hover:bg-green-600 text-white border border-green-700 flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 flex items-center gap-1.5"
               >
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Approve Dossier
@@ -275,7 +275,7 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
               <button
                 onClick={handleOpenDeficiencyModal}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-red-50 hover:bg-red-100 text-red-600 border border-red-300 flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 flex items-center gap-1.5"
               >
                 <AlertTriangle className="h-3.5 w-3.5" />
                 Flag Deficiency
@@ -283,9 +283,9 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
               <button
                 onClick={handleEscalatePhysical}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center gap-1.5"
               >
-                <ShieldAlert className="h-3.5 w-3.5 text-amber-600" />
+                <ShieldAlert className="h-3.5 w-3.5 text-amber-400" />
                 Escalate Physical Audit
               </button>
             </div>
@@ -305,9 +305,9 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
             </div>
 
             {/* RIGHT COLUMN: AI EXTRACTIONS & 4 STATUTORY MASTER CHECKS */}
-            <div className="border border-gray-200 bg-white p-4 flex flex-col gap-3.5 overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <span className="text-[10px] uppercase font-mono tracking-widest text-green-600 font-bold">
+            <div className="border border-slate-800 bg-[#0b1120] p-4 flex flex-col gap-3.5 overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold">
                   AI EXTRACTION &amp; STATUTORY MASTER VALIDATION
                 </span>
                 <span
@@ -321,9 +321,9 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
               {/* Red Alert Banner if Scenario has Anomalies */}
               {activeScenario.anomalies.length > 0 && (
-                <div className="p-2.5 border border-red-200 bg-red-50 text-red-600 text-xs">
+                <div className="p-2.5 border border-rose-800 bg-rose-950/50 text-rose-300 text-xs">
                   <div className="font-bold flex items-center gap-1.5 mb-1">
-                    <AlertTriangle className="h-3.5 w-3.5 text-red-600" />
+                    <AlertTriangle className="h-3.5 w-3.5 text-rose-400" />
                     <span>SYSTEM FRAUD &amp; DEFICIENCY FLAGS:</span>
                   </div>
                   <ul className="list-disc list-inside space-y-0.5 text-[11px] font-mono">
@@ -331,35 +331,35 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                       <li key={idx}>{anom}</li>
                     ))}
                   </ul>
-                  <div className="mt-2 text-[10px] font-mono text-red-500 border-t border-red-200 pt-1">
+                  <div className="mt-2 text-[10px] font-mono text-rose-200 border-t border-rose-900/60 pt-1">
                     Expected Action: {activeScenario.expectedCitation}
                   </div>
                 </div>
               )}
 
               {/* AI Extracted Structured Fields Table */}
-              <div className="border border-gray-200 bg-gray-50 p-2.5">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-gray-500 block mb-2">
+              <div className="border border-slate-800 bg-slate-900/80 p-2.5">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block mb-2">
                   STRUCTURED METADATA EXTRACTED
                 </span>
                 <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                   <div>
-                    <span className="text-gray-500 text-[10px] block">APPLICANT NAME</span>
-                    <span className="text-gray-900 font-bold">{activeScenario.applicantName}</span>
+                    <span className="text-slate-500 text-[10px] block">APPLICANT NAME</span>
+                    <span className="text-slate-200 font-bold">{activeScenario.applicantName}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-[10px] block">SUB-CASTE EXTRACTED</span>
-                    <span className="text-blue-600 font-bold">{currentSubCaste}</span>
+                    <span className="text-slate-500 text-[10px] block">SUB-CASTE EXTRACTED</span>
+                    <span className="text-cyan-400 font-bold">{currentSubCaste}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-[10px] block">ANNUAL INCOME EXTRACTED</span>
-                    <span className={incomeCheck ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+                    <span className="text-slate-500 text-[10px] block">ANNUAL INCOME EXTRACTED</span>
+                    <span className={incomeCheck ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
                       {formatCurrency(currentIncome)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-[10px] block">VALIDITY DATE</span>
-                    <span className={activeScenario.category === 'EXPIRED_DOCUMENT' ? 'text-amber-600 font-bold' : 'text-gray-900'}>
+                    <span className="text-slate-500 text-[10px] block">VALIDITY DATE</span>
+                    <span className={activeScenario.category === 'EXPIRED_DOCUMENT' ? 'text-amber-400 font-bold' : 'text-slate-200'}>
                       {activeScenario.validUntil}
                     </span>
                   </div>
@@ -367,55 +367,55 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
               </div>
 
               {/* 4 STATUTORY MASTER CHECKS TABLE */}
-              <div className="border border-gray-200 bg-gray-50 p-2.5 flex flex-col gap-2">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-gray-500 block">
+              <div className="border border-slate-800 bg-slate-900/80 p-2.5 flex flex-col gap-2">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">
                   STATUTORY REPOSITORY CROSS-CHECKS (4 MASTER TABLES)
                 </span>
 
                 {/* Check 1: Central Presidential ST Order (Dataset A) */}
-                <div className="p-2 border border-gray-200 bg-white text-xs font-mono">
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-700 font-bold">1. Article 342 Presidential ST Order:</span>
-                    <span className={stOrderCheck.isValid ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+                    <span className="text-slate-300 font-bold">1. Article 342 Presidential ST Order:</span>
+                    <span className={stOrderCheck.isValid ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
                       {stOrderCheck.isValid ? 'MATCHED ✓' : 'UNLISTED ✗'}
                     </span>
                   </div>
-                  <p className="text-[10px] text-gray-500">{stOrderCheck.legalCitation}</p>
+                  <p className="text-[10px] text-slate-400">{stOrderCheck.legalCitation}</p>
                 </div>
 
                 {/* Check 2: PVTG Master Dataset (Dataset B) */}
-                <div className="p-2 border border-gray-200 bg-white text-xs font-mono">
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-700 font-bold">2. PVTG Priority Master Registry:</span>
-                    <span className={pvtgCheck.isPVTG ? 'text-amber-600 font-bold' : 'text-gray-500'}>
+                    <span className="text-slate-300 font-bold">2. PVTG Priority Master Registry:</span>
+                    <span className={pvtgCheck.isPVTG ? 'text-amber-300 font-bold' : 'text-slate-400'}>
                       {pvtgCheck.isPVTG ? 'PVTG PRIORITY 1 ✓' : 'STANDARD ST'}
                     </span>
                   </div>
-                  <p className="text-[10px] text-gray-500">{pvtgCheck.notificationDetails}</p>
+                  <p className="text-[10px] text-slate-400">{pvtgCheck.notificationDetails}</p>
                 </div>
 
                 {/* Check 3: AISHE Code Master (Dataset C) */}
-                <div className="p-2 border border-gray-200 bg-white text-xs font-mono">
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-700 font-bold">3. AISHE Institution Accreditation:</span>
-                    <span className={aisheCheck.isValid ? 'text-green-600 font-bold' : 'text-amber-600'}>
+                    <span className="text-slate-300 font-bold">3. AISHE Institution Accreditation:</span>
+                    <span className={aisheCheck.isValid ? 'text-emerald-400 font-bold' : 'text-amber-400'}>
                       {aisheCheck.isValid ? `ACCREDITED (${aisheCheck.institution?.aisheCode}) ✓` : 'PENDING ✗'}
                     </span>
                   </div>
-                  <p className="text-[10px] text-gray-500">{aisheCheck.validationNotice}</p>
+                  <p className="text-[10px] text-slate-400">{aisheCheck.validationNotice}</p>
                 </div>
 
                 {/* Check 4: Income Ceiling & National Deduplication */}
-                <div className="p-2 border border-gray-200 bg-white text-xs font-mono">
+                <div className="p-2 border border-slate-800 bg-slate-950 text-xs font-mono">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-700 font-bold">4. Income Ceiling &amp; NSP Deduplication:</span>
+                    <span className="text-slate-300 font-bold">4. Income Ceiling &amp; NSP Deduplication:</span>
                     <span
                       className={
                         activeScenario.category === 'DUPLICATE_BENEFIT'
-                          ? 'text-red-600 font-bold'
+                          ? 'text-red-400 font-bold'
                           : incomeCheck
-                          ? 'text-green-600 font-bold'
-                          : 'text-red-600 font-bold'
+                          ? 'text-emerald-400 font-bold'
+                          : 'text-rose-400 font-bold'
                       }
                     >
                       {activeScenario.category === 'DUPLICATE_BENEFIT'
@@ -425,7 +425,7 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                         : 'CAP EXCEEDED ✗'}
                     </span>
                   </div>
-                  <p className="text-[10px] text-gray-500">
+                  <p className="text-[10px] text-slate-400">
                     {activeScenario.category === 'DUPLICATE_BENEFIT'
                       ? 'Matched active UGC-JRF disbursement on Canara Bank SFMP. Automated freeze triggered.'
                       : `Income: ${formatCurrency(currentIncome)} (Ceiling: ₹6,00,000 p.a.)`}
@@ -439,21 +439,21 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
       {/* VIEW 2: CENTRAL QUEUE */}
       {currentTab === 'queue' && (
-        <div className="border border-gray-200 bg-white p-4 flex flex-col gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-3">
+        <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-green-600 font-mono font-semibold">
                 CENTRAL ASSIGNMENT MATRIX
               </span>
-              <h3 className="text-base font-bold text-gray-900">
+              <h3 className="text-base font-bold text-slate-900">
                 MoTA Verification Dossier Queue ({apps.length} Files Assigned)
               </h3>
             </div>
           </div>
 
           <div className="overflow-x-auto w-full">
-            <table className="w-full text-left text-xs text-gray-700 border border-gray-200">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-[10px] font-mono border-b border-gray-200">
+            <table className="w-full text-left text-xs text-slate-700 border border-slate-200">
+              <thead className="bg-slate-50 text-slate-400 uppercase text-[10px] font-mono border-b border-slate-200">
                 <tr>
                   <th className="p-2.5">Application ID</th>
                   <th className="p-2.5">Applicant / APAAR</th>
@@ -465,22 +465,22 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                   <th className="p-2.5 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 font-normal">
+              <tbody className="divide-y divide-slate-200 font-normal">
                 {apps.map((a) => (
-                  <tr key={a.id} className="hover:bg-gray-50">
+                  <tr key={a.id} className="hover:bg-white shadow-sm rounded-lg">
                     <td className="p-2.5 font-mono text-[11px] font-bold text-blue-600">{a.id}</td>
                     <td className="p-2.5">
-                      <div className="font-semibold text-gray-900">{a.applicantName}</div>
-                      <div className="text-[10px] font-mono text-gray-500">{a.apaarId}</div>
+                      <div className="font-semibold text-slate-900">{a.applicantName}</div>
+                      <div className="text-[10px] font-mono text-slate-400">{a.apaarId}</div>
                     </td>
                     <td className="p-2.5">
                       <span className={`text-[10px] font-mono px-2 py-0.5 border ${getSchemeColor(a.schemeCode)}`}>
                         {a.schemeCode}
                       </span>
                     </td>
-                    <td className="p-2.5 text-gray-600">{a.state}</td>
+                    <td className="p-2.5 text-slate-700">{a.state}</td>
                     <td className="p-2.5 font-mono text-green-600">{formatCurrency(a.annualIncome)}</td>
-                    <td className="p-2.5 font-mono text-gray-900">{a.pgMarksPercent}%</td>
+                    <td className="p-2.5 font-mono text-slate-800">{a.pgMarksPercent}%</td>
                     <td className="p-2.5">
                       <span className={`text-[10px] font-mono px-2 py-0.5 border ${getStatusColor(a.status)}`}>
                         {getStatusLabel(a.status)}
@@ -492,7 +492,7 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                           if (onSelectAppId) onSelectAppId(a.id);
                           onTabChange('workbench');
                         }}
-                        className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
+                        className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-400"
                       >
                         Open AI Workbench →
                       </button>
@@ -507,20 +507,20 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
       {/* DEFICIENCY REMARK MODAL */}
       {showDeficiencyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-xl border border-red-200 bg-white p-5 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-xl border border-red-200 bg-[#0c0d14] p-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-red-200 pb-3 mb-3">
               <div>
-                <span className="text-[10px] uppercase font-mono tracking-widest text-red-600 font-bold">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-red-500 font-bold">
                   FLAG DOCUMENT DEFICIENCY (RULE 14A)
                 </span>
-                <h3 className="text-sm font-bold text-gray-900">
+                <h3 className="text-sm font-bold text-slate-100">
                   Issue Statutory Citation to {activeScenario.applicantName}
                 </h3>
               </div>
               <button
                 onClick={() => setShowDeficiencyModal(false)}
-                className="text-gray-500 hover:text-gray-900 font-mono text-xs px-2 py-1 border border-gray-300 hover:bg-gray-100"
+                className="text-slate-400 hover:text-slate-900 font-mono text-xs px-2 py-1 border border-slate-300 hover:bg-slate-100"
               >
                 ✕ ESC
               </button>
@@ -528,13 +528,13 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
             <form onSubmit={handleRaiseDeficiency} className="flex flex-col gap-3">
               <div>
-                <label className="text-[10px] uppercase font-mono text-gray-500 block mb-1">
+                <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1">
                   Predefined Legal Remark Template
                 </label>
                 <select
                   value={selectedTemplate}
                   onChange={(e) => setSelectedTemplate(e.target.value)}
-                  className="w-full bg-white border border-gray-300 text-xs text-gray-900 p-2 focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-100 border border-slate-300 text-xs text-slate-800 p-2"
                 >
                   {DEFICIENCY_REMARK_TEMPLATES.map((tmpl, idx) => (
                     <option key={idx} value={tmpl}>
@@ -545,7 +545,7 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
               </div>
 
               <div>
-                <label className="text-[10px] uppercase font-mono text-gray-500 block mb-1">
+                <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1">
                   Officer Detailed Remarks
                 </label>
                 <textarea
@@ -553,26 +553,26 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
                   value={customRemark}
                   onChange={(e) => setCustomRemark(e.target.value)}
                   placeholder={selectedTemplate}
-                  className="w-full bg-white border border-gray-300 text-xs text-gray-900 p-2 leading-relaxed font-mono focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-100 border border-slate-300 text-xs text-slate-800 p-2 leading-relaxed font-mono"
                 />
               </div>
 
-              <div className="text-[11px] text-gray-600 font-mono bg-gray-50 p-2 border border-gray-200">
-                Notice: Raising a deficiency opens an isolated 7-day countdown window on the scholar's
+              <div className="text-[11px] text-slate-400 font-mono bg-slate-50 p-2 border border-slate-200">
+                Notice: Raising a deficiency opens an isolated 7-day countdown window on the scholar’s
                 portal and dispatches automated notifications via SMS, WhatsApp, and DigiLocker.
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-gray-200">
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowDeficiencyModal(false)}
-                  className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-gray-100"
+                  className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 border border-slate-300 hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-red-600 hover:bg-red-500 text-white border border-red-500 flex items-center gap-1.5"
+                  className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white border border-rose-500 flex items-center gap-1.5"
                 >
                   <Send className="h-3 w-3" />
                   Dispatch Statutory Notice →
@@ -585,20 +585,20 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
       {/* SMS & WHATSAPP NOTIFICATION DISPATCH PREVIEW MODAL */}
       {showDispatchPreview && dispatchData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl border border-gray-200 bg-white p-5 shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+          <div className="w-full max-w-2xl border border-slate-700 bg-[#0b1120] p-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
               <div>
-                <span className="text-[10px] uppercase font-mono tracking-widest text-green-600 font-bold">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold">
                   AUTOMATED DEFICIENCY DISPATCH LOOP (TELECOM GATEWAY)
                 </span>
-                <h3 className="text-base font-bold text-gray-900">
+                <h3 className="text-base font-bold text-slate-100">
                   Instant Notifications Dispatched to Scholar
                 </h3>
               </div>
               <button
                 onClick={() => setShowDispatchPreview(false)}
-                className="text-gray-500 hover:text-gray-900 font-mono text-xs px-2 py-1 border border-gray-300 hover:bg-gray-100"
+                className="text-slate-400 hover:text-slate-100 font-mono text-xs px-2 py-1 border border-slate-700 hover:bg-slate-800"
               >
                 ✕ CLOSE
               </button>
@@ -606,44 +606,44 @@ export const ScrutinyOfficerWorkbench: React.FC<ScrutinyOfficerWorkbenchProps> =
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               {/* SMS Notification Card */}
-              <div className="border border-gray-200 bg-gray-50 p-3 flex flex-col justify-between">
+              <div className="border border-slate-800 bg-slate-900/90 p-3 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-blue-600 font-bold text-xs mb-2">
+                  <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs mb-2">
                     <Smartphone className="h-4 w-4" />
                     <span>NIC DLT National SMS Gateway (Sent)</span>
                   </div>
-                  <div className="p-2.5 bg-white border border-gray-200 text-xs font-mono text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  <div className="p-2.5 bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 leading-relaxed whitespace-pre-wrap">
                     {dispatchData.smsText}
                   </div>
                 </div>
-                <div className="mt-2 text-[10px] font-mono text-gray-500 flex justify-between">
+                <div className="mt-2 text-[10px] font-mono text-slate-500 flex justify-between">
                   <span>DLT Header: GOVMOT</span>
-                  <span className="text-green-600">DELIVERED ✓</span>
+                  <span className="text-emerald-400">DELIVERED ✓</span>
                 </div>
               </div>
 
               {/* WhatsApp Notification Card */}
-              <div className="border border-gray-200 bg-gray-50 p-3 flex flex-col justify-between">
+              <div className="border border-slate-800 bg-slate-900/90 p-3 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-green-600 font-bold text-xs mb-2">
+                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs mb-2">
                     <MessageSquare className="h-4 w-4" />
                     <span>WhatsApp Official MoTA Business API</span>
                   </div>
-                  <div className="p-2.5 bg-green-50 border border-green-200 text-xs font-mono text-green-700 leading-relaxed whitespace-pre-wrap">
+                  <div className="p-2.5 bg-[#051c14] border border-emerald-900/60 text-xs font-mono text-emerald-200 leading-relaxed whitespace-pre-wrap">
                     {dispatchData.whatsAppText}
                   </div>
                 </div>
-                <div className="mt-2 text-[10px] font-mono text-gray-500 flex justify-between">
+                <div className="mt-2 text-[10px] font-mono text-slate-500 flex justify-between">
                   <span>Template: mota_deficiency_alert</span>
-                  <span className="text-green-600">READ ✓✓</span>
+                  <span className="text-emerald-400">READ ✓✓</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-gray-200">
+            <div className="flex justify-end pt-2 border-t border-slate-800">
               <button
                 onClick={() => setShowDispatchPreview(false)}
-                className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
+                className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600"
               >
                 Acknowledge &amp; Return to Desk
               </button>

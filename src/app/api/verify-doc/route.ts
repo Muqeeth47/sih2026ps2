@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     const apiKey = process.env.GEMINI_API_KEY?.trim();
 
-    // 1. LIVE GOOGLE GEMINI 3.6 / 3.5 FLASH PATHWAY (When GEMINI_API_KEY is configured)
+    // 1. LIVE GOOGLE GEMINI 2.5 FLASH PATHWAY (When GEMINI_API_KEY is configured)
     if (apiKey) {
       try {
         const ai = new GoogleGenAI({ apiKey });
@@ -51,7 +51,7 @@ Return ONLY a valid JSON object matching this schema:
         }
         contents.push({ text: prompt });
 
-        const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+        const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
 
         const response = await ai.models.generateContent({
           model: modelName,

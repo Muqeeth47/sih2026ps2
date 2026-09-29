@@ -1,42 +1,78 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
+  /* Government Primary & Accents (Light-Themed Palette) */
+  --mota-navy-primary: #0f5ca8;     
+  --mota-navy-dark: #0a192f;        
+  --mota-saffron: #ff9933;          
+  --mota-primary: #1e293b;          
+  --mota-primary-dark: #0f172a;     
+  --mota-blue-accent: #0284c7;      
+  --mota-green: #15803d;            
+  --mota-green-subtle: #f0fdf4;     
+  --mota-crimson: #dc2626;          
+  --mota-crimson-subtle: #fef2f2;   
+  --mota-gold: #d97706;             
+  --mota-amber: #d97706;            
+  --mota-amber-subtle: #fff7ed;     
+
+  /* Neutral Crisp Light Surfaces & Ink */
+  --background: #f8fafc;               
   --foreground: #0f172a;
-  --surface-primary: #ffffff;
-  --surface-secondary: #f1f5f9;
-  --surface-tertiary: #e2e8f0;
-  --border-subtle: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --accent-blue: #1d4ed8;
-  --accent-green: #16a34a;
-  --accent-amber: #d97706;
-  --accent-rose: #dc2626;
-  --navy: #0f2a5e;
+  --mota-bg: #f8fafc;               
+  --mota-surface: #ffffff;          
+  --mota-surface-2: #f1f5f9;        
+  --mota-surface-3: #e2e8f0;        
+  --mota-border: #cbd5e1;           
+  --mota-border-subtle: #e2e8f0;    
+  --mota-text-main: #0f172a;        
+  --mota-text-muted: #475569;       
+  --mota-text-subtle: #94a3b8;      
+
+  /* Sizing & Layout Tokens */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  overflow-x: hidden;
-  color-scheme: light;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Light-mode scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ─── Scrollbar Styling ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--mota-surface-2); }
+::-webkit-scrollbar-thumb { background: var(--mota-border); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--mota-text-subtle); }
+
+/* ─── Confidence Pills ───────────────────────────────────────── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 0px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.pill-green  { background: var(--mota-green-subtle);  color: var(--mota-green); border: 1px solid #86efac; }
+.pill-red    { background: var(--mota-crimson-subtle); color: var(--mota-crimson); border: 1px solid #fecaca; }
+.pill-amber  { background: var(--mota-amber-subtle);  color: var(--mota-amber); border: 1px solid #fed7aa; }
+
+/* ─── Responsive Helpers ─────────────────────────────────────── */
+.desktop-only { display: block; }
+.mobile-only  { display: none; }
+
+@media (max-width: 900px) {
+  .desktop-only { display: none !important; }
+  .mobile-only  { display: block !important; }
 }
 
 /* Print Formatting */
