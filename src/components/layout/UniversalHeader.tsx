@@ -4,9 +4,19 @@ import Link from 'next/link';
 import { useAppStore } from '@/lib/store';
 import { ShieldCheck, User, LogOut, Menu, X, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { TRANSLATIONS } from '@/lib/translations';
 
 export const UniversalHeader: React.FC = () => {
-  const { currentRole, setRole } = useAppStore();
+  const { currentRole, setRole, currentLang = 'en', setLang } = useAppStore();
+  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+
+  const handleFontSize = (size: 'sm' | 'md' | 'lg') => {
+    if (typeof document !== 'undefined') {
+      if (size === 'sm') document.documentElement.style.fontSize = '90%';
+      if (size === 'md') document.documentElement.style.fontSize = '100%';
+      if (size === 'lg') document.documentElement.style.fontSize = '112%';
+    }
+  };
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDropdownOpen, setIsLoginDropdownOpen] = useState(false);
@@ -49,13 +59,28 @@ export const UniversalHeader: React.FC = () => {
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <button className="hover:text-blue-300 transition-colors">A-</button>
-          <button className="hover:text-blue-300 transition-colors">A</button>
-          <button className="hover:text-blue-300 transition-colors">A+</button>
+          <button onClick={() => handleFontSize('sm')} className="hover:text-blue-300 transition-colors px-1" title="Decrease font size">A-</button>
+          <button onClick={() => handleFontSize('md')} className="hover:text-blue-300 transition-colors px-1" title="Default font size">A</button>
+          <button onClick={() => handleFontSize('lg')} className="hover:text-blue-300 transition-colors px-1" title="Increase font size">A+</button>
           <div className="h-3 w-px bg-slate-600"></div>
-          <button className="hover:text-blue-300 transition-colors">English</button>
-          <button className="hover:text-blue-300 transition-colors">हिन्दी</button>
-          <button className="hover:text-blue-300 transition-colors">ᱥᱟᱱᱛᱟᱲᱤ</button>
+          <button
+            onClick={() => setLang('en')}
+            className={`transition-colors px-1.5 py-0.5 rounded ${currentLang === 'en' ? 'bg-blue-600 text-white font-bold' : 'hover:text-blue-300'}`}
+          >
+            English
+          </button>
+          <button
+            onClick={() => setLang('hi')}
+            className={`transition-colors px-1.5 py-0.5 rounded ${currentLang === 'hi' ? 'bg-blue-600 text-white font-bold' : 'hover:text-blue-300'}`}
+          >
+            हिन्दी
+          </button>
+          <button
+            onClick={() => setLang('sat')}
+            className={`transition-colors px-1.5 py-0.5 rounded ${currentLang === 'sat' ? 'bg-blue-600 text-white font-bold' : 'hover:text-blue-300'}`}
+          >
+            ᱥᱟᱱᱛᱟᱲᱤ
+          </button>
         </div>
       </div>
 
@@ -68,7 +93,7 @@ export const UniversalHeader: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-xs sm:text-sm md:text-base font-bold leading-none text-slate-900">Ministry of Tribal Affairs</span>
-              <span className="text-[10px] sm:text-xs text-slate-500 font-medium hidden sm:block">Scholarship & Fellowship Portal</span>
+              <span className="text-[10px] sm:text-xs text-slate-500 font-medium hidden sm:block">Scholarship &amp; Fellowship Portal</span>
             </div>
           </Link>
           
@@ -83,11 +108,11 @@ export const UniversalHeader: React.FC = () => {
 
         {/* Middle: Navigation (Desktop) */}
         <nav className="hidden lg:flex items-center gap-8">
-          <Link href="/" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">Home</Link>
-          <Link href="/scholarships" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">Scholarships</Link>
-          <Link href="/fellowships" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">Fellowships</Link>
-          <Link href="/how-it-works" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">How It Works</Link>
-          <Link href="/help" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">Help</Link>
+          <Link href="/" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">{t.home}</Link>
+          <Link href="/scholarships" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">{t.scholarships}</Link>
+          <Link href="/fellowships" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">{t.fellowships}</Link>
+          <Link href="/how-it-works" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">{t.howItWorks}</Link>
+          <Link href="/help" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">{t.help}</Link>
         </nav>
 
         {/* Right: Actions */}

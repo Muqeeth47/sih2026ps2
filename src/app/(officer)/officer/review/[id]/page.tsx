@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppStore } from '@/lib/store';
 import { getStatusColor, getStatusLabel, formatCurrency, getDocumentLabel } from '@/lib/utils';
-import { ArrowLeft, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, AlertTriangle, XCircle, X, FileText } from 'lucide-react';
+import { PdfViewer } from '@/components/PdfViewer';
 
 export default function OfficerReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -13,6 +14,7 @@ export default function OfficerReviewPage({ params }: { params: Promise<{ id: st
   const app = applications.find(a => a.id === id);
   const [deficiencyMsg, setDeficiencyMsg] = useState('');
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState<any | null>(null);
 
   if (!app) return <div>Application not found</div>;
 
@@ -82,7 +84,12 @@ export default function OfficerReviewPage({ params }: { params: Promise<{ id: st
                     <FileText className="h-5 w-5 text-slate-400" />
                     <span className="font-semibold text-sm">{getDocumentLabel(doc.type)}</span>
                   </div>
-                  <button className="text-xs font-bold text-blue-600 hover:underline">View File</button>
+                  <button
+                    onClick={() => setSelectedDoc(doc)}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                  >
+                    <span>View Official PDF</span> &rarr;
+                  </button>
                 </li>
               ))}
             </ul>
@@ -188,7 +195,37 @@ export default function OfficerReviewPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       )}
+
+      {/* High-Fidelity PDF Inspection Modal */}
+      {selectedDoc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full h-[90vh] shadow-2xl border border-slate-300 flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-slate-200 bg-slate-50">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-blue-600" />
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">{getDocumentLabel(selectedDoc.type)}</h3>
+                  <p className="text-[11px] text-slate-500 font-mono">File: {selectedDoc.fileName} • Applicant: {app.applicantName}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDoc(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden p-2">
+              <PdfViewer
+                applicantName={app.applicantName}
+                state={app.state}
+                documentType={selectedDoc.type}
+                fileName={selectedDoc.fileName}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-import { FileText } from 'lucide-react';

@@ -10,6 +10,10 @@ interface AppStore {
   darkMode: boolean;
   toggleDarkMode: () => void;
   
+  // Language Translation State
+  currentLang: 'en' | 'hi' | 'sat';
+  setLang: (lang: 'en' | 'hi' | 'sat') => void;
+  
   // Prototype State
   applications: Application[];
   updateAppStatus: (id: string, status: Application['status']) => void;
@@ -32,9 +36,11 @@ export const useAppStore = create<AppStore>()(
       currentRole: 'GUEST',
       currentUser: null,
       darkMode: false,
+      currentLang: 'en',
       setRole: (role: Role) =>
         set({ currentRole: role, currentUser: ROLE_TO_USER[role] }),
       toggleDarkMode: () => set((s) => ({ darkMode: !s.darkMode })),
+      setLang: (lang) => set({ currentLang: lang }),
       
       applications: INITIAL_APPS,
       updateAppStatus: (id, status) => set((s) => ({
